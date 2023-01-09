@@ -3,7 +3,6 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdbool.h>
-#include <sys/stat.h>
 
 void checkFileExistence(char *filename);                                // check if the file exists
 void driverFunction(FILE *f, FILE *symbolTable);                        // this is where we will loop until EOF
