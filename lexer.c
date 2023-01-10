@@ -197,9 +197,9 @@ char create_NDI_Lexeme(FILE *f, FILE *symbolTable, char firstChar)
     }
 
     if (flag == 0)
-        fprintf(symbolTable, "%s = NUMBER\n", lexeme);
+        fprintf(symbolTable, "%s = CONSTNUMBER\n", lexeme);
     else if (flag == 1)
-        fprintf(symbolTable, "%s = DECIMALNUMBER\n", lexeme);
+        fprintf(symbolTable, "%s = CONSTDECIMAL\n", lexeme);
     else if (flag == 2)
         fprintf(symbolTable, "%s = INVALID\n", lexeme);
 
@@ -1315,7 +1315,7 @@ char create_WORD_Lexeme(FILE *f, FILE *symbolTable)
     }
     else
     {
-        fprintf(symbolTable, "%s = WORD\n", lexeme);
+        fprintf(symbolTable, "%s = CONSTWORD\n", lexeme);
         cur_char = getNextCharacter(f);
         return cur_char;
     }
@@ -1363,7 +1363,7 @@ char create_LETTER_Lexeme(FILE *f, FILE *symbolTable)
     }
     else
     {
-        fprintf(symbolTable, "%s = LETTER\n", lexeme);
+        fprintf(symbolTable, "%s = CONSTLETTER\n", lexeme);
         cur_char = getNextCharacter(f);
         return cur_char;
     }
