@@ -472,7 +472,7 @@ char create_NKRI_Lexeme(FILE *f, FILE *symbolTable, char firstChar)
             }
         }
     }
-    else if (lexeme[0] == 'c') // case, continue
+    else if (lexeme[0] == 'c') // case, continue, character
     {
         cur_char = getNextCharacter(f);
         if (cur_char == 'a') // case
@@ -565,6 +565,75 @@ char create_NKRI_Lexeme(FILE *f, FILE *symbolTable, char firstChar)
                 }
             }
         }
+        else if (cur_char == 'h') // character
+        {
+            lexeme = (char *)realloc(lexeme, (strlen(lexeme) + strlen(temp)) * sizeof(char) + 1);
+            temp[0] = cur_char;
+            strcat(lexeme, temp);
+            cur_char = getNextCharacter(f);
+
+            if (cur_char == 'a')
+            {
+                lexeme = (char *)realloc(lexeme, (strlen(lexeme) + strlen(temp)) * sizeof(char) + 1);
+                temp[0] = cur_char;
+                strcat(lexeme, temp);
+                cur_char = getNextCharacter(f);
+
+                if (cur_char == 'r')
+                {
+                    lexeme = (char *)realloc(lexeme, (strlen(lexeme) + strlen(temp)) * sizeof(char) + 1);
+                    temp[0] = cur_char;
+                    strcat(lexeme, temp);
+                    cur_char = getNextCharacter(f);
+
+                    if (cur_char == 'a')
+                    {
+                        lexeme = (char *)realloc(lexeme, (strlen(lexeme) + strlen(temp)) * sizeof(char) + 1);
+                        temp[0] = cur_char;
+                        strcat(lexeme, temp);
+                        cur_char = getNextCharacter(f);
+
+                        if (cur_char == 'c')
+                        {
+                            lexeme = (char *)realloc(lexeme, (strlen(lexeme) + strlen(temp)) * sizeof(char) + 1);
+                            temp[0] = cur_char;
+                            strcat(lexeme, temp);
+                            cur_char = getNextCharacter(f);
+
+                            if (cur_char == 't')
+                            {
+                                lexeme = (char *)realloc(lexeme, (strlen(lexeme) + strlen(temp)) * sizeof(char) + 1);
+                                temp[0] = cur_char;
+                                strcat(lexeme, temp);
+                                cur_char = getNextCharacter(f);
+
+                                if (cur_char == 'e')
+                                {
+                                    lexeme = (char *)realloc(lexeme, (strlen(lexeme) + strlen(temp)) * sizeof(char) + 1);
+                                    temp[0] = cur_char;
+                                    strcat(lexeme, temp);
+                                    cur_char = getNextCharacter(f);
+
+                                    if (cur_char == 'r')
+                                    {
+                                        lexeme = (char *)realloc(lexeme, (strlen(lexeme) + strlen(temp)) * sizeof(char) + 1);
+                                        temp[0] = cur_char;
+                                        strcat(lexeme, temp);
+                                        cur_char = getNextCharacter(f);
+
+                                        if (!isalnum(cur_char) && cur_char != '_')
+                                        {
+                                            fprintf(symbolTable, "%s = character\n", lexeme);
+                                            return cur_char;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
     else if (lexeme[0] == 'r') // return
     {
@@ -615,55 +684,10 @@ char create_NKRI_Lexeme(FILE *f, FILE *symbolTable, char firstChar)
             }
         }
     }
-    else if (lexeme[0] == 'l') // letter, list
+    else if (lexeme[0] == 'l') // list
     {
         cur_char = getNextCharacter(f);
-        if (cur_char == 'e') // letter
-        {
-            lexeme = (char *)realloc(lexeme, (strlen(lexeme) + strlen(temp)) * sizeof(char) + 1);
-            temp[0] = cur_char;
-            strcat(lexeme, temp);
-            cur_char = getNextCharacter(f);
-
-            if (cur_char == 't')
-            {
-                lexeme = (char *)realloc(lexeme, (strlen(lexeme) + strlen(temp)) * sizeof(char) + 1);
-                temp[0] = cur_char;
-                strcat(lexeme, temp);
-                cur_char = getNextCharacter(f);
-
-                if (cur_char == 't')
-                {
-                    lexeme = (char *)realloc(lexeme, (strlen(lexeme) + strlen(temp)) * sizeof(char) + 1);
-                    temp[0] = cur_char;
-                    strcat(lexeme, temp);
-                    cur_char = getNextCharacter(f);
-
-                    if (cur_char == 'e')
-                    {
-                        lexeme = (char *)realloc(lexeme, (strlen(lexeme) + strlen(temp)) * sizeof(char) + 1);
-                        temp[0] = cur_char;
-                        strcat(lexeme, temp);
-                        cur_char = getNextCharacter(f);
-
-                        if (cur_char == 'r')
-                        {
-                            lexeme = (char *)realloc(lexeme, (strlen(lexeme) + strlen(temp)) * sizeof(char) + 1);
-                            temp[0] = cur_char;
-                            strcat(lexeme, temp);
-                            cur_char = getNextCharacter(f);
-
-                            if (!isalnum(cur_char) && cur_char != '_')
-                            {
-                                fprintf(symbolTable, "%s = letter\n", lexeme);
-                                return cur_char;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        else if (cur_char == 'i') // list
+        if (cur_char == 'i') // list
         {
             lexeme = (char *)realloc(lexeme, (strlen(lexeme) + strlen(temp)) * sizeof(char) + 1);
             temp[0] = cur_char;
