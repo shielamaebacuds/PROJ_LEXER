@@ -11,7 +11,7 @@ char create_NDI_Lexeme(FILE *f, FILE *symbolTable, char firstChar);     // num,d
 char create_NKRI_Lexeme(FILE *f, FILE *symbolTable, char firstChar);    // noise,keyword,reserve,invalid
 char create_COMMENT_Lexeme(FILE *f, FILE *symbolTable, char firstChar); // single, multi
 char create_WORD_Lexeme(FILE *f, FILE *symbolTable);                    // string or word
-char create_LETTER_Lexeme(FILE *f, FILE *symbolTable);                  // char or letter
+char create_CHARACTER_Lexeme(FILE *f, FILE *symbolTable);               // char or letter
 bool isOperator(FILE *f, FILE *symbolTable, char *c);                   // for operators
 bool isDelimiterBracket(FILE *f, FILE *symbolTable, char *c);           // for delimiters and brackets
 
@@ -89,8 +89,9 @@ void driverFunction(FILE *f, FILE *symbolTable)
         else if (currentCharacter == '\n')
         {
             currentCharacter = getNextCharacter(f);
-            if(currentCharacter != '\n'){
-                fprintf(symbolTable,"NEWLINE = NEWLINE\n");
+            if (currentCharacter != '\n')
+            {
+                fprintf(symbolTable, "NEWLINE = NEWLINE\n");
             }
         }
 
@@ -113,7 +114,7 @@ void driverFunction(FILE *f, FILE *symbolTable)
         }
         else if (currentCharacter == '\'')
         {
-            currentCharacter = create_LETTER_Lexeme(f, symbolTable);
+            currentCharacter = create_CHARACTER_Lexeme(f, symbolTable);
         }
         else if (isOperator(f, symbolTable, &currentCharacter) == true)
         {
@@ -1321,7 +1322,7 @@ char create_WORD_Lexeme(FILE *f, FILE *symbolTable)
     }
 }
 
-char create_LETTER_Lexeme(FILE *f, FILE *symbolTable)
+char create_CHARACTER_Lexeme(FILE *f, FILE *symbolTable)
 {
     char cur_char;
     char *lexeme = NULL;
@@ -1363,7 +1364,7 @@ char create_LETTER_Lexeme(FILE *f, FILE *symbolTable)
     }
     else
     {
-        fprintf(symbolTable, "%s = CONSTLETTER\n", lexeme);
+        fprintf(symbolTable, "%s = CONSTCHARACTER\n", lexeme);
         cur_char = getNextCharacter(f);
         return cur_char;
     }
