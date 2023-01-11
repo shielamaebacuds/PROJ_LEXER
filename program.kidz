@@ -1,37 +1,16 @@
 myNum23_
+
 + - / * % ^ @
+
 == > < != <= >=
-and
-or
-not
 
-end
-if
-else
-then
-case
-foreach
-in
-do
-match
-return
-continue
-true
-false
-list
-while
-display
-input
+and or not
 
-num
-decimal
-word
-letter
-boolean
+end if else then case foreach in do match return continue true false list while display input
 
-the
-a
-an
+num decimal word letter boolean
+
+the a an
 
 #this is a single line comment
 
@@ -40,18 +19,12 @@ multi line comment##
 
 = () [] , ; {} :
 
-1000
-12.324
-"Hello World"
-'x'
-true
-false
+1000 12.324 "Hello World" 'x' true false
 
+` ~  ! $ & | \ . ?
 
 123abc
 1.2.3.4.5
 "string with no ending double quote
 'morethanonechracter'
 'a
-
-` ~  ! $ & | \ . ?
