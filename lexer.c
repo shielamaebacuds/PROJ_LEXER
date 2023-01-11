@@ -1590,10 +1590,10 @@ bool isDelimiterBracket(FILE *f, FILE *symbolTable, char *c)
 
     case ':':
         lexeme = (char *)malloc(sizeof(char) + 1);
-        lexeme[0] = ';';
+        lexeme[0] = ':';
         lexeme[1] = '\0';
 
-        fprintf(symbolTable, "%s = ;\n", lexeme);
+        fprintf(symbolTable, "%s = :\n", lexeme);
 
         *c = getNextCharacter(f);
         return true;
