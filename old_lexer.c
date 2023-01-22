@@ -943,7 +943,7 @@ char create_NKRI_Lexeme(FILE *f, FILE *symbolTable, char firstChar)
 
                         if (!isalnum(cur_char) && cur_char != '_')
                         {
-                            fprintf(symbolTable, "false~\n", lexeme);
+                            fprintf(symbolTable, "false~%s\n", lexeme);
                             return cur_char;
                         }
                     }
