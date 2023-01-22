@@ -225,7 +225,7 @@ char create_NKRI_Lexeme(FILE *f, FILE *symbolTable, char firstChar) // converted
 
                 if (!isalnum(cur_char) && cur_char != '_')
                 {
-                    fprintf(symbolTable, " = num\n");
+                    fprintf(symbolTable, "~num\n");
                     return cur_char;
                 }
             }
