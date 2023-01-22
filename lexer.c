@@ -91,7 +91,7 @@ void driverFunction(FILE *f, FILE *symbolTable)
             currentCharacter = getNextCharacter(f);
             if (currentCharacter != '\n')
             {
-                fprintf(symbolTable, "NEWLINE = NEWLINE\n");
+                fprintf(symbolTable, "NEWLINE~NEWLINE\n");
             }
         }
 
@@ -126,7 +126,7 @@ void driverFunction(FILE *f, FILE *symbolTable)
         }
         else
         {
-            fprintf(symbolTable, "%c = INVALID\n", currentCharacter);
+            fprintf(symbolTable, "%c~INVALID\n", currentCharacter);
             currentCharacter = getNextCharacter(f);
         }
     }
@@ -190,11 +190,11 @@ char create_NDI_Lexeme(FILE *f, FILE *symbolTable, char firstChar) // converted 
     }
 
     if (flag == 0)
-        fprintf(symbolTable, " = CONSTNUMBER\n");
+        fprintf(symbolTable, "~CONSTNUMBER\n");
     else if (flag == 1)
-        fprintf(symbolTable, " = CONSTDECIMAL\n");
+        fprintf(symbolTable, "~CONSTDECIMAL\n");
     else if (flag == 2)
-        fprintf(symbolTable, " = INVALID\n");
+        fprintf(symbolTable, "~INVALID\n");
 
     return cur_char;
 }
@@ -244,7 +244,7 @@ char create_NKRI_Lexeme(FILE *f, FILE *symbolTable, char firstChar) // converted
 
                 if (!isalnum(cur_char) && cur_char != '_')
                 {
-                    fprintf(symbolTable, " = num\n");
+                    fprintf(symbolTable, "~num\n");
                     return cur_char;
                 }
             }
@@ -294,7 +294,7 @@ char create_NKRI_Lexeme(FILE *f, FILE *symbolTable, char firstChar) // converted
 
                                 if (!isalnum(cur_char) && cur_char != '_')
                                 {
-                                    fprintf(symbolTable, " = boolean\n");
+                                    fprintf(symbolTable, "~boolean\n");
                                     counter++;
                                     return cur_char;
                                 }
@@ -325,7 +325,7 @@ char create_NKRI_Lexeme(FILE *f, FILE *symbolTable, char firstChar) // converted
 
             if (!isalnum(cur_char) && cur_char != '_')
             {
-                fprintf(symbolTable, " = an\n");
+                fprintf(symbolTable, "~an\n");
                 return cur_char;
             }
 
@@ -337,7 +337,7 @@ char create_NKRI_Lexeme(FILE *f, FILE *symbolTable, char firstChar) // converted
 
                 if (!isalnum(cur_char) && cur_char != '_')
                 {
-                    fprintf(symbolTable, " = and\n");
+                    fprintf(symbolTable, "~and\n");
                     return cur_char;
                 }
             }
@@ -357,7 +357,7 @@ char create_NKRI_Lexeme(FILE *f, FILE *symbolTable, char firstChar) // converted
 
             if (!isalnum(cur_char) && cur_char != '_')
             {
-                fprintf(symbolTable, " = or\n");
+                fprintf(symbolTable, "~or\n");
                 return cur_char;
             }
         }
@@ -394,7 +394,7 @@ char create_NKRI_Lexeme(FILE *f, FILE *symbolTable, char firstChar) // converted
 
                         if (!isalnum(cur_char) && cur_char != '_')
                         {
-                            fprintf(symbolTable, " = match\n");
+                            fprintf(symbolTable, "~match\n");
                             return cur_char;
                         }
                     }
@@ -428,7 +428,7 @@ char create_NKRI_Lexeme(FILE *f, FILE *symbolTable, char firstChar) // converted
 
                     if (!isalnum(cur_char) && cur_char != '_')
                     {
-                        fprintf(symbolTable, " = case\n");
+                        fprintf(symbolTable, "~case\n");
                         return cur_char;
                     }
                 }
@@ -478,7 +478,7 @@ char create_NKRI_Lexeme(FILE *f, FILE *symbolTable, char firstChar) // converted
 
                                     if (!isalnum(cur_char) && cur_char != '_')
                                     {
-                                        fprintf(symbolTable, " = continue\n");
+                                        fprintf(symbolTable, "~continue\n");
                                         return cur_char;
                                     }
                                 }
@@ -538,7 +538,7 @@ char create_NKRI_Lexeme(FILE *f, FILE *symbolTable, char firstChar) // converted
 
                                         if (!isalnum(cur_char) && cur_char != '_')
                                         {
-                                            fprintf(symbolTable, " = character\n");
+                                            fprintf(symbolTable, "~character\n");
                                             return cur_char;
                                         }
                                     }
@@ -588,7 +588,7 @@ char create_NKRI_Lexeme(FILE *f, FILE *symbolTable, char firstChar) // converted
 
                             if (!isalnum(cur_char) && cur_char != '_')
                             {
-                                fprintf(symbolTable, " = return\n");
+                                fprintf(symbolTable, "~return\n");
                                 return cur_char;
                             }
                         }
@@ -623,7 +623,7 @@ char create_NKRI_Lexeme(FILE *f, FILE *symbolTable, char firstChar) // converted
 
                     if (!isalnum(cur_char) && cur_char != '_')
                     {
-                        fprintf(symbolTable, " = list\n");
+                        fprintf(symbolTable, "~list\n");
                         return cur_char;
                     }
                 }
@@ -656,7 +656,7 @@ char create_NKRI_Lexeme(FILE *f, FILE *symbolTable, char firstChar) // converted
 
                     if (!isalnum(cur_char) && cur_char != '_')
                     {
-                        fprintf(symbolTable, " = word\n");
+                        fprintf(symbolTable, "~word\n");
                         return cur_char;
                     }
                 }
@@ -688,7 +688,7 @@ char create_NKRI_Lexeme(FILE *f, FILE *symbolTable, char firstChar) // converted
 
                         if (!isalnum(cur_char) && cur_char != '_')
                         {
-                            fprintf(symbolTable, " = while\n");
+                            fprintf(symbolTable, "~while\n");
                             return cur_char;
                         }
                     }
@@ -710,7 +710,7 @@ char create_NKRI_Lexeme(FILE *f, FILE *symbolTable, char firstChar) // converted
 
             if (!isalnum(cur_char) && cur_char != '_')
             {
-                fprintf(symbolTable, " = do\n");
+                fprintf(symbolTable, "~do\n");
                 return cur_char;
             }
         }
@@ -752,7 +752,7 @@ char create_NKRI_Lexeme(FILE *f, FILE *symbolTable, char firstChar) // converted
 
                                 if (!isalnum(cur_char) && cur_char != '_')
                                 {
-                                    fprintf(symbolTable, " = decimal\n");
+                                    fprintf(symbolTable, "~decimal\n");
                                     return cur_char;
                                 }
                             }
@@ -799,7 +799,7 @@ char create_NKRI_Lexeme(FILE *f, FILE *symbolTable, char firstChar) // converted
 
                                 if (!isalnum(cur_char) && cur_char != '_')
                                 {
-                                    fprintf(symbolTable, " = display\n");
+                                    fprintf(symbolTable, "~display\n");
                                     return cur_char;
                                 }
                             }
@@ -853,7 +853,7 @@ char create_NKRI_Lexeme(FILE *f, FILE *symbolTable, char firstChar) // converted
 
                                 if (!isalnum(cur_char) && cur_char != '_')
                                 {
-                                    fprintf(symbolTable, " = foreach\n");
+                                    fprintf(symbolTable, "~foreach\n");
                                     return cur_char;
                                 }
                             }
@@ -888,7 +888,7 @@ char create_NKRI_Lexeme(FILE *f, FILE *symbolTable, char firstChar) // converted
 
                         if (!isalnum(cur_char) && cur_char != '_')
                         {
-                            fprintf(symbolTable, " = false\n");
+                            fprintf(symbolTable, "~false\n");
                             return cur_char;
                         }
                     }
@@ -922,7 +922,7 @@ char create_NKRI_Lexeme(FILE *f, FILE *symbolTable, char firstChar) // converted
 
                     if (!isalnum(cur_char) && cur_char != '_')
                     {
-                        fprintf(symbolTable, " = else\n");
+                        fprintf(symbolTable, "~else\n");
                         return cur_char;
                     }
                 }
@@ -942,7 +942,7 @@ char create_NKRI_Lexeme(FILE *f, FILE *symbolTable, char firstChar) // converted
 
                 if (!isalnum(cur_char) && cur_char != '_')
                 {
-                    fprintf(symbolTable, " = end\n");
+                    fprintf(symbolTable, "~end\n");
                     return cur_char;
                 }
             }
@@ -962,7 +962,7 @@ char create_NKRI_Lexeme(FILE *f, FILE *symbolTable, char firstChar) // converted
 
             if (!isalnum(cur_char) && cur_char != '_')
             {
-                fprintf(symbolTable, " = if\n");
+                fprintf(symbolTable, "~if\n");
                 return cur_char;
             }
         }
@@ -974,7 +974,7 @@ char create_NKRI_Lexeme(FILE *f, FILE *symbolTable, char firstChar) // converted
 
             if (!isalnum(cur_char) && cur_char != '_')
             {
-                fprintf(symbolTable, " = in\n");
+                fprintf(symbolTable, "~in\n");
                 return cur_char;
             }
 
@@ -998,7 +998,7 @@ char create_NKRI_Lexeme(FILE *f, FILE *symbolTable, char firstChar) // converted
 
                         if (!isalnum(cur_char) && cur_char != '_')
                         {
-                            fprintf(symbolTable, " = input\n");
+                            fprintf(symbolTable, "~input\n");
                             return cur_char;
                         }
                     }
@@ -1032,7 +1032,7 @@ char create_NKRI_Lexeme(FILE *f, FILE *symbolTable, char firstChar) // converted
 
                     if (!isalnum(cur_char) && cur_char != '_')
                     {
-                        fprintf(symbolTable, " = true\n");
+                        fprintf(symbolTable, "~true\n");
                         return cur_char;
                     }
                 }
@@ -1064,7 +1064,7 @@ char create_NKRI_Lexeme(FILE *f, FILE *symbolTable, char firstChar) // converted
 
                     if (!isalnum(cur_char) && cur_char != '_')
                     {
-                        fprintf(symbolTable, " = then\n");
+                        fprintf(symbolTable, "~then\n");
                         return cur_char;
                     }
                 }
@@ -1083,9 +1083,9 @@ char create_NKRI_Lexeme(FILE *f, FILE *symbolTable, char firstChar) // converted
     }
 
     if (counter > 31)
-        fprintf(symbolTable, " = INVALID\n");
+        fprintf(symbolTable, "~INVALID\n");
     else
-        fprintf(symbolTable, " = IDENTIFIER\n");
+        fprintf(symbolTable, "~IDENTIFIER\n");
     return cur_char;
 }
 
@@ -1115,7 +1115,7 @@ char create_COMMENT_Lexeme(FILE *f, FILE *symbolTable, char firstChar)
             cur_char = getNextCharacter(f);
         }
 
-        fprintf(symbolTable, "%s = SLCOMMENT\n", lexeme);
+        fprintf(symbolTable, "%s~SLCOMMENT\n", lexeme);
         return cur_char;
     }
 
@@ -1156,9 +1156,9 @@ char create_COMMENT_Lexeme(FILE *f, FILE *symbolTable, char firstChar)
         }
 
         if (found == 1)
-            fprintf(symbolTable, "%s = MLCOMMENT\n", lexeme);
+            fprintf(symbolTable, "%s~MLCOMMENT\n", lexeme);
         else
-            fprintf(symbolTable, "%s = INVALID\n", lexeme);
+            fprintf(symbolTable, "%s~INVALID\n", lexeme);
     }
 
     if (cur_char != EOF)
@@ -1196,19 +1196,19 @@ char create_WORD_Lexeme(FILE *f, FILE *symbolTable)
 
     if (counter == 0)
     {
-        fprintf(symbolTable, "%c = INVALID\n", temp[0]);
+        fprintf(symbolTable, "%c~INVALID\n", temp[0]);
         // fprintf(symbolTable, " = INVALID\n");
         return cur_char;
     }
     else if (cur_char != '"')
     {
-        fprintf(symbolTable, "\"%s = INVALID\n", lexeme);
+        fprintf(symbolTable, "\"%s~INVALID\n", lexeme);
         // fprintf(symbolTable, " = INVALID\n");
         return cur_char;
     }
     else
     {
-        fprintf(symbolTable, "%s = CONSTWORD\n", lexeme);
+        fprintf(symbolTable, "%s~CONSTWORD\n", lexeme);
         // fprintf(symbolTable, " = CONSTWORD\n");
         cur_char = getNextCharacter(f);
         return cur_char;
@@ -1240,24 +1240,24 @@ char create_CHARACTER_Lexeme(FILE *f, FILE *symbolTable)
 
     if (strlen(lexeme) == 0)
     {
-        fprintf(symbolTable, "%c = INVALID\n", temp[0]);
+        fprintf(symbolTable, "%c~INVALID\n", temp[0]);
         return cur_char;
     }
 
     else if (cur_char != '\'')
     {
-        fprintf(symbolTable, "'%s = INVALID\n", lexeme);
+        fprintf(symbolTable, "'%s~INVALID\n", lexeme);
         return cur_char;
     }
     else if (strlen(lexeme) > 1)
     {
-        fprintf(symbolTable, "%s = INVALID\n", lexeme);
+        fprintf(symbolTable, "%s~INVALID\n", lexeme);
         cur_char = getNextCharacter(f);
         return cur_char;
     }
     else
     {
-        fprintf(symbolTable, "%s = CONSTCHARACTER\n", lexeme);
+        fprintf(symbolTable, "%s~CONSTCHARACTER\n", lexeme);
         cur_char = getNextCharacter(f);
         return cur_char;
     }
@@ -1280,7 +1280,7 @@ bool isOperator(FILE *f, FILE *symbolTable, char *c) // converted to print direc
         }
         else
         {
-            fprintf(symbolTable, " = =\n");
+            fprintf(symbolTable, "~=\n");
             *c = cur_char;
         }
 
@@ -1292,13 +1292,13 @@ bool isOperator(FILE *f, FILE *symbolTable, char *c) // converted to print direc
         cur_char = getNextCharacter(f);
         if (cur_char == '=')
         {
-            fprintf(symbolTable, " = >=\n");
+            fprintf(symbolTable, "~>=\n");
 
             *c = getNextCharacter(f); // para magchange yung value ng currentCharacter sa driver function
         }
         else
         {
-            fprintf(symbolTable, " = >\n");
+            fprintf(symbolTable, "~>\n");
             *c = cur_char;
         }
         return true;
@@ -1309,13 +1309,13 @@ bool isOperator(FILE *f, FILE *symbolTable, char *c) // converted to print direc
         cur_char = getNextCharacter(f);
         if (cur_char == '=')
         {
-            fprintf(symbolTable, " = <=\n");
+            fprintf(symbolTable, "~<=\n");
 
             *c = getNextCharacter(f); // para magchange yung value ng currentCharacter sa driver function
         }
         else
         {
-            fprintf(symbolTable, " = <\n");
+            fprintf(symbolTable, "~<\n");
             *c = cur_char;
         }
 
@@ -1327,13 +1327,13 @@ bool isOperator(FILE *f, FILE *symbolTable, char *c) // converted to print direc
         cur_char = getNextCharacter(f);
         if (cur_char == '=')
         {
-            fprintf(symbolTable, " = !=\n");
+            fprintf(symbolTable, "~!=\n");
 
             *c = getNextCharacter(f); // para magchange yung value ng currentCharacter sa driver function
         }
         else
         {
-            fprintf(symbolTable, " = INVALID\n");
+            fprintf(symbolTable, "~INVALID\n");
 
             *c = cur_char;
         }
@@ -1391,7 +1391,7 @@ bool isOperator(FILE *f, FILE *symbolTable, char *c) // converted to print direc
     case '@':
 
         fprintf(symbolTable, "%c", cur_char);
-        fprintf(symbolTable, " = @\n");
+        fprintf(symbolTable, "~@\n");
 
         *c = getNextCharacter(f);
         return true;
@@ -1406,7 +1406,7 @@ bool isDelimiterBracket(FILE *f, FILE *symbolTable, char *c) // converted to pri
     {
     case '(':
         fprintf(symbolTable, "%c", cur_char);
-        fprintf(symbolTable, " = (\n");
+        fprintf(symbolTable, "~(\n");
 
         *c = getNextCharacter(f);
         return true;
@@ -1414,7 +1414,7 @@ bool isDelimiterBracket(FILE *f, FILE *symbolTable, char *c) // converted to pri
     case ')':
 
         fprintf(symbolTable, "%c", cur_char);
-        fprintf(symbolTable, " = )\n");
+        fprintf(symbolTable, "~)\n");
 
         *c = getNextCharacter(f);
         return true;
@@ -1422,7 +1422,7 @@ bool isDelimiterBracket(FILE *f, FILE *symbolTable, char *c) // converted to pri
     case '[':
 
         fprintf(symbolTable, "%c", cur_char);
-        fprintf(symbolTable, " = [\n");
+        fprintf(symbolTable, "~[\n");
 
         *c = getNextCharacter(f);
         return true;
@@ -1430,7 +1430,7 @@ bool isDelimiterBracket(FILE *f, FILE *symbolTable, char *c) // converted to pri
     case ']':
 
         fprintf(symbolTable, "%c", cur_char);
-        fprintf(symbolTable, " = ]\n");
+        fprintf(symbolTable, "~]\n");
 
         *c = getNextCharacter(f);
         return true;
@@ -1438,7 +1438,7 @@ bool isDelimiterBracket(FILE *f, FILE *symbolTable, char *c) // converted to pri
     case '{':
 
         fprintf(symbolTable, "%c", cur_char);
-        fprintf(symbolTable, " = {\n");
+        fprintf(symbolTable, "~{\n");
 
         *c = getNextCharacter(f);
         return true;
@@ -1446,7 +1446,7 @@ bool isDelimiterBracket(FILE *f, FILE *symbolTable, char *c) // converted to pri
     case '}':
 
         fprintf(symbolTable, "%c", cur_char);
-        fprintf(symbolTable, " = }\n");
+        fprintf(symbolTable, "~}\n");
 
         *c = getNextCharacter(f);
         return true;
@@ -1454,7 +1454,7 @@ bool isDelimiterBracket(FILE *f, FILE *symbolTable, char *c) // converted to pri
     case ';':
 
         fprintf(symbolTable, "%c", cur_char);
-        fprintf(symbolTable, " = ;\n");
+        fprintf(symbolTable, "~;\n");
 
         *c = getNextCharacter(f);
         return true;
@@ -1462,7 +1462,7 @@ bool isDelimiterBracket(FILE *f, FILE *symbolTable, char *c) // converted to pri
     case ':':
 
         fprintf(symbolTable, "%c", cur_char);
-        fprintf(symbolTable, " = :\n");
+        fprintf(symbolTable, "~:\n");
 
         *c = getNextCharacter(f);
         return true;
@@ -1470,7 +1470,7 @@ bool isDelimiterBracket(FILE *f, FILE *symbolTable, char *c) // converted to pri
     case ',':
 
         fprintf(symbolTable, "%c", cur_char);
-        fprintf(symbolTable, " = ,\n");
+        fprintf(symbolTable, "~,\n");
 
         *c = getNextCharacter(f);
         return true;
