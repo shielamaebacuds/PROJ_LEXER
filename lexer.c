@@ -1052,7 +1052,7 @@ char create_NKRI_Lexeme(FILE *f, FILE *symbolTable, char firstChar) // converted
 
                 if (!isalnum(cur_char) && cur_char != '_')
                 {
-                    fprintf(symbolTable, " = the\n");
+                    fprintf(symbolTable, "~the\n");
                     return cur_char;
                 }
 
@@ -1271,7 +1271,7 @@ bool isOperator(FILE *f, FILE *symbolTable, char *c) // converted to print direc
         if (cur_char == '=')
         {
             fprintf(symbolTable, "%c", cur_char);
-            fprintf(symbolTable, " = ==\n");
+            fprintf(symbolTable, "~==\n");
 
             *c = getNextCharacter(f); // para magchange yung value ng currentCharacter sa driver function
         }
@@ -1340,7 +1340,7 @@ bool isOperator(FILE *f, FILE *symbolTable, char *c) // converted to print direc
     case '+':
 
         fprintf(symbolTable, "%c", cur_char);
-        fprintf(symbolTable, " = +\n");
+        fprintf(symbolTable, "~+\n");
 
         *c = getNextCharacter(f);
         return true;
@@ -1348,7 +1348,7 @@ bool isOperator(FILE *f, FILE *symbolTable, char *c) // converted to print direc
     case '-':
 
         fprintf(symbolTable, "%c", cur_char);
-        fprintf(symbolTable, " = -\n");
+        fprintf(symbolTable, "~-\n");
 
         *c = getNextCharacter(f);
         return true;
@@ -1356,7 +1356,7 @@ bool isOperator(FILE *f, FILE *symbolTable, char *c) // converted to print direc
     case '/':
 
         fprintf(symbolTable, "%c", cur_char);
-        fprintf(symbolTable, " = /\n");
+        fprintf(symbolTable, "~/\n");
 
         *c = getNextCharacter(f);
         return true;
@@ -1364,7 +1364,7 @@ bool isOperator(FILE *f, FILE *symbolTable, char *c) // converted to print direc
     case '*':
 
         fprintf(symbolTable, "%c", cur_char);
-        fprintf(symbolTable, " = *\n");
+        fprintf(symbolTable, "~*\n");
 
         *c = getNextCharacter(f);
         return true;
@@ -1372,7 +1372,7 @@ bool isOperator(FILE *f, FILE *symbolTable, char *c) // converted to print direc
     case '%':
 
         fprintf(symbolTable, "%c", cur_char);
-        fprintf(symbolTable, " = %%\n");
+        fprintf(symbolTable, "~%%\n");
 
         *c = getNextCharacter(f);
         return true;
@@ -1380,7 +1380,7 @@ bool isOperator(FILE *f, FILE *symbolTable, char *c) // converted to print direc
     case '^':
 
         fprintf(symbolTable, "%c", cur_char);
-        fprintf(symbolTable, " = ^\n");
+        fprintf(symbolTable, "~^\n");
 
         *c = getNextCharacter(f);
         return true;
