@@ -1071,10 +1071,7 @@ char create_NKRI_Lexeme(FILE *f, FILE *symbolTable, char firstChar) // converted
             }
         }
     }
-    else
-    {
-        cur_char = getNextCharacter(f);
-    }
+
 
     while (isalnum(cur_char) || cur_char == '_')
     {
