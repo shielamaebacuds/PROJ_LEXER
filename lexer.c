@@ -91,7 +91,7 @@ void driverFunction(FILE *f, FILE *symbolTable)
             currentCharacter = getNextCharacter(f);
             if (currentCharacter != '\n')
             {
-                fprintf(symbolTable, "NEWLINE = NEWLINE\n");
+                fprintf(symbolTable, "NEWLINE~NEWLINE\n");
             }
         }
 
@@ -126,7 +126,7 @@ void driverFunction(FILE *f, FILE *symbolTable)
         }
         else
         {
-            fprintf(symbolTable, "%c = INVALID\n", currentCharacter);
+            fprintf(symbolTable, "INVALID~%c\n", currentCharacter);
             currentCharacter = getNextCharacter(f);
         }
     }
@@ -198,11 +198,11 @@ char create_NDI_Lexeme(FILE *f, FILE *symbolTable, char firstChar)
     }
 
     if (flag == 0)
-        fprintf(symbolTable, "%s = CONSTNUMBER\n", lexeme);
+        fprintf(symbolTable, "CONSTNUMBER~%s\n", lexeme);
     else if (flag == 1)
-        fprintf(symbolTable, "%s = CONSTDECIMAL\n", lexeme);
+        fprintf(symbolTable, "CONSTDECIMAL~%s\n", lexeme);
     else if (flag == 2)
-        fprintf(symbolTable, "%s = INVALID\n", lexeme);
+        fprintf(symbolTable, "INVALID~%s\n", lexeme);
 
     return cur_char;
 }
@@ -240,7 +240,7 @@ char create_NKRI_Lexeme(FILE *f, FILE *symbolTable, char firstChar)
 
                 if (!isalnum(cur_char) && cur_char != '_')
                 {
-                    fprintf(symbolTable, "%s = num\n", lexeme);
+                    fprintf(symbolTable, "num~%s\n", lexeme);
                     return cur_char;
                 }
             }
@@ -261,7 +261,7 @@ char create_NKRI_Lexeme(FILE *f, FILE *symbolTable, char firstChar)
 
                 if (!isalnum(cur_char) && cur_char != '_')
                 {
-                    fprintf(symbolTable, "%s = not\n", lexeme);
+                    fprintf(symbolTable, "not~%s\n", lexeme);
                     return cur_char;
                 }
             }
@@ -314,7 +314,7 @@ char create_NKRI_Lexeme(FILE *f, FILE *symbolTable, char firstChar)
 
                                 if (!isalnum(cur_char) && cur_char != '_')
                                 {
-                                    fprintf(symbolTable, "%s = boolean\n", lexeme);
+                                    fprintf(symbolTable, "boolean~%s\n", lexeme);
                                     return cur_char;
                                 }
                             }
@@ -329,7 +329,7 @@ char create_NKRI_Lexeme(FILE *f, FILE *symbolTable, char firstChar)
         cur_char = getNextCharacter(f);
         if (!isalnum(cur_char) && cur_char != '_')
         {
-            fprintf(symbolTable, "%s = a\n", lexeme);
+            fprintf(symbolTable, "a~%s\n", lexeme);
             return cur_char;
         }
 
@@ -342,7 +342,7 @@ char create_NKRI_Lexeme(FILE *f, FILE *symbolTable, char firstChar)
 
             if (!isalnum(cur_char) && cur_char != '_')
             {
-                fprintf(symbolTable, "%s = an\n", lexeme);
+                fprintf(symbolTable, "an~%s\n", lexeme);
                 return cur_char;
             }
 
@@ -355,7 +355,7 @@ char create_NKRI_Lexeme(FILE *f, FILE *symbolTable, char firstChar)
 
                 if (!isalnum(cur_char) && cur_char != '_')
                 {
-                    fprintf(symbolTable, "%s = and\n", lexeme);
+                    fprintf(symbolTable, "and~%s\n", lexeme);
                     return cur_char;
                 }
             }
@@ -373,7 +373,7 @@ char create_NKRI_Lexeme(FILE *f, FILE *symbolTable, char firstChar)
 
             if (!isalnum(cur_char) && cur_char != '_')
             {
-                fprintf(symbolTable, "%s = or\n", lexeme);
+                fprintf(symbolTable, "or~%s\n", lexeme);
                 return cur_char;
             }
         }
@@ -411,7 +411,7 @@ char create_NKRI_Lexeme(FILE *f, FILE *symbolTable, char firstChar)
 
                         if (!isalnum(cur_char) && cur_char != '_')
                         {
-                            fprintf(symbolTable, "%s = match\n", lexeme);
+                            fprintf(symbolTable, "match~%s\n", lexeme);
                             return cur_char;
                         }
                     }
@@ -445,7 +445,7 @@ char create_NKRI_Lexeme(FILE *f, FILE *symbolTable, char firstChar)
 
                     if (!isalnum(cur_char) && cur_char != '_')
                     {
-                        fprintf(symbolTable, "%s = case\n", lexeme);
+                        fprintf(symbolTable, "case~%s\n", lexeme);
                         return cur_char;
                     }
                 }
