@@ -53,7 +53,9 @@ void getNextToken(){
 
     currentChar[0]=fgetc(symbolTable);
     currentChar[1]='\0';
-
+    
+    
+    //get token
     while(currentChar[0]!='~'){
 
         token = (char *)realloc(token, (strlen(token) + strlen(currentChar)) * sizeof(char) + 1);
@@ -68,7 +70,7 @@ void getNextToken(){
     currentChar[1]='\0';
 
 
-
+    //get lexeme
     while(currentChar[0]!='\n'){
 
         lexeme = (char *)realloc(lexeme, (strlen(lexeme) + strlen(currentChar)) * sizeof(char) + 1);
