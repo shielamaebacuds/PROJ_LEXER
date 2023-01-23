@@ -151,6 +151,7 @@ void declaration_stmt(){
     getNextToken();
     //printf(token);
 
+    //MAY BUG DITO. AYAW MAG EQUAL NUNG TOKEN AT IDENTIFIER
     if(token == "IDENTIFIER"){
         printf(token);
     }else{
