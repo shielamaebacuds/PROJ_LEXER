@@ -15,7 +15,7 @@ char *token;
 void getNextToken(); // getting the next token in the symbol table
 void stmt(); //check whether the stmt is simple or compound
 int expect(char expectedToken[]); //chek if the next token is the same as the expectedToken
-int declaration_stmt(); //check if declaration stmt
+void declaration_stmt(); //check if declaration stmt
 void error(char message[]); //display error message
 bool resv_word(); //check if resv_word
 
@@ -144,7 +144,7 @@ void compound_stmt(){
 }
 */
 
-int declaration_stmt(){
+void declaration_stmt(){
 
     getNextToken();
     //printf(token);
