@@ -10,7 +10,6 @@ int position;
 char *lexeme;
 char space[2];
 char *token;
-char *expr;
 
 void getNextToken(); // getting the next token in the symbol table
 void stmt(); //check whether the stmt is simple or compound
@@ -42,9 +41,6 @@ int main(){
     token = NULL;
     token = (char*)malloc(sizeof(char)+1);
 
-    expr = NULL;
-    expr = (char*)malloc(sizeof(char)+1);
-    expr[0] = '\0';
 
     //read file
     stmt();
@@ -201,43 +197,6 @@ bool const_wordCharBool(){
     }
     else{
         return false;
-    }
-
-}
-
-
-bool arithmetic_expr(){
-
-    //arithmetic_term
-    if(arithmetic_term){
-        printf("%s ", token);
-        return true;
-    }
-    else if(){
-
-    }
-    else{
-        return false;
-    }
-
-}
-
-bool arithmetic_term(){
-
-    //arithmetic_term
-    if(strcmp(token,"IDENTIFIER")==0 || strcmp(token,"CONSTNUM")==0 || strcmp(token,"CONSTDECIMAL")==0){
-        return true;
-    }
-    else{
-        return false;
-    }
-
-}
-
-bool highest(){
-
-    if(arithmetic_term){
-
     }
 
 }
