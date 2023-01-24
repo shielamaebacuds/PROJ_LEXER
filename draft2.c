@@ -1,3 +1,5 @@
+//DRAFT DRAFT DRAFT (just for testing <expr> rules)
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -27,6 +29,7 @@ bool lowest_logic_expr();
 bool lower_logic_expr();
 bool low_logic_expr();
 bool expr_factor();
+bool maykapartnernaparenthesis = false;
 
 
 int main(){
@@ -256,16 +259,22 @@ void expr(){
         merongBooleanOperator=lowest_logic_expr();
     }
     
-    if(strcmp(token,";")!=0 && strcmp(token,"NEWLINE")!=0)
-    {   
-        while(strcmp(token,"NEWLINE")!=0)
-        {
-            getNextToken(); // error until newline is encountered
+    if (maykapartnernaparenthesis==false)
+    {
+        if(strcmp(token,";")!=0 && strcmp(token,"NEWLINE")!=0)
+        {   
+            while(strcmp(token,"NEWLINE")!=0)
+            {
+                getNextToken(); // error until newline is encountered
+            }
+            printf("\nWALA SA RULES");
         }
-        printf("\nWala sa rules");
     }
 
-    printf("\n<expr>}");
+    return;    
+    printf("\n  <expr>}");
+
+    
 }
 
 bool lowest_logic_expr (){
@@ -324,9 +333,11 @@ bool low_logic_expr()
 
 bool expr_factor()
 {
-    if (strcmp(token,"true")==0)
+
+
+    if (strcmp(token,"true")==0 || strcmp(token,"false")==0 || strcmp(token,"IDENTIFIER")==0 
+        || strcmp(token, "CONSTNUMBER")==0 || strcmp(token,"CONSTDECIMAL")==0 )
     {
- 
         getNextToken();
         if (strcmp(token,"not")==0)
         {
@@ -337,8 +348,36 @@ bool expr_factor()
     }
     //else if identifier, number, decimal, (<expr>), <arithmetic_expr>
     
-    else  
-    {   
+    else if (strcmp(token,"(")==0)
+    {
+            
+        maykapartnernaparenthesis=true;
+        getNextToken();
+        expr();
+        
+        if(strcmp(token,")")!=0) // expect(RPAREN) dapat kaso di ko mahanap kung saan nag bug kapag true or (false or true) NEWLINE, yung newline na yung naeexpect
+        {
+            while(strcmp(token,"NEWLINE")!=0)
+            {
+                getNextToken(); // error until newline is encountered
+            }
+            printf("\nNo right parenthesis ')' before token: [%s]", token);
+
+            return false;
+        }
+
+        getNextToken();
+        if (strcmp(token,"not")==0)
+        {
+            return true;
+        }
+        
+        return false;
+
+    }
+
+    else if (maykapartnernaparenthesis==false)
+    {
         while(strcmp(token,"NEWLINE")!=0)
         {
             getNextToken(); // error until newline is encountered
@@ -346,6 +385,11 @@ bool expr_factor()
         printf("\nWala sa ruless");
 
         return false;
+        
     }
-    
+
+    else return false;
+
 }
+
+
