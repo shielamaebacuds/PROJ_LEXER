@@ -18,8 +18,7 @@ void declaration_stmt(); //check if declaration stmt
 void error(char message[]); //display error message
 bool resv_word(); //check if resv_word
 bool const_wordCharBool(); //check if the toke is a CONSTWORD | CONSTCHARACTER | false | true
-bool arithmetic_expr();
-bool arithmetic_term();
+
 
 
 
@@ -164,7 +163,7 @@ void declaration_stmt(){
         expect("=");
         getNextToken();
         const_wordCharBool();
-        arithmetic_expr();
+        expr(); // ITO YUNG CURRENTLY NA GINAGAGAWA KO. AYUN YUNG DRAFT_EXPR
     }else{
         printf("\nerror");
     }
