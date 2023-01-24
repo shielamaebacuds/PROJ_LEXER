@@ -52,41 +52,44 @@ int main(){
 void getNextToken(){
 
 
-    token[0] = '\0';
-
-    currentChar[0]=fgetc(symbolTable);
-    currentChar[1]='\0';
-
-    while(currentChar[0]!='~'){
-
-        token = (char *)realloc(token, (strlen(token) + strlen(currentChar)) * sizeof(char) + 1);
-        strcat(token,currentChar);
+        token[0] = '\0';
 
         currentChar[0]=fgetc(symbolTable);
         currentChar[1]='\0';
-    }
 
+    if(currentChar[0]!=EOF){
+        while(currentChar[0]!='~'){
 
-    currentChar[0]=fgetc(symbolTable);
-    currentChar[1]='\0';
+            token = (char *)realloc(token, (strlen(token) + strlen(currentChar)) * sizeof(char) + 1);
+            strcat(token,currentChar);
 
+            currentChar[0]=fgetc(symbolTable);
+            currentChar[1]='\0';
+        }
 
-
-    while(currentChar[0]!='\n'){
-
-        lexeme = (char *)realloc(lexeme, (strlen(lexeme) + strlen(currentChar)) * sizeof(char) + 1);
-        strcat(lexeme,currentChar);
 
         currentChar[0]=fgetc(symbolTable);
         currentChar[1]='\0';
+
+
+
+        while(currentChar[0]!='\n' && currentChar[0]!=EOF){
+
+            lexeme = (char *)realloc(lexeme, (strlen(lexeme) + strlen(currentChar)) * sizeof(char) + 1);
+            strcat(lexeme,currentChar);
+
+            currentChar[0]=fgetc(symbolTable);
+            currentChar[1]='\0';
+        }
+
+        space[0] = ' ';
+        space[1] = '\0';
+
+        lexeme = (char *)realloc(lexeme, (strlen(lexeme) + strlen(space)) * sizeof(char) + 1);
+        strcat(lexeme,space);
+
+        
     }
-
-    space[0] = ' ';
-    space[1] = '\0';
-
-    lexeme = (char *)realloc(lexeme, (strlen(lexeme) + strlen(space)) * sizeof(char) + 1);
-    strcat(lexeme,space);
-
 
 
 }
