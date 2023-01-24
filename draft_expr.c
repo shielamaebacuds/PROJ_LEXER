@@ -6,12 +6,36 @@
 //currently ginagawa ko itong part na ito na kasama na bool at logic
 void expr(){
 
-    printf("\n<expr>{");
+     printf(" <expr>{");
 
-    while(token==ID|CONST|ARITH_OP|LOGIC_OP|BOOL_OP|'('|')'){
-        
+    if(token==ID|CONST|ARITH_OP|LOGIC_OP|BOOL_OP|'('|')'){
+
+        lowest_logic_expr(); //get the leftmost term in the expr()
+
+        if(token==BOOL_OP){ //get bool operator if exists
+            lowestOperator = token;
+            printf("\n%s", token);
+
+            getNextToken();
+
+            if(token==ID|CONST|ARITH_OP|LOGIC_OP|BOOL_OP|'('|')'){//get next term of expr()
+                lowest_logic_expr();
+            }
+            else{//unexpected symbol eg 12+3>
+                error();
+            }
+
+        }
+        else if(token==ID|CONST|')'){//unexpected symbol eg 12 + 3 12
+            error();
+        }
+        else if(token==')'){//missing '(' symbol eg 12 +3 )
+            error();
+        }
 
     }
+
+    printf("\n<expr>}");
 
 }
 
