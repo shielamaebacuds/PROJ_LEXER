@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-
+int neededRightParen = 0 ; //count ng parenthesis;
 char currentChar[2];
 FILE *symbolTable;
 int position;
@@ -21,7 +21,7 @@ void declaration_stmt(); //check if declaration stmt
 void error(char message[]); //display error message
 bool resv_word(); //check if resv_word
 bool const_wordCharBool(); //check if the toke is a CONSTWORD | CONSTCHARACTER | false | true
-bool arithmetic_expr();
+
 bool arithmetic_term();
 void simple_stmt();
 void expr();
@@ -30,6 +30,11 @@ bool lower_logic_expr();
 bool low_logic_expr();
 bool expr_factor();
 bool maykapartnernaparenthesis = false;
+void arithmetic_expr();
+bool higher_term();
+bool term();
+bool factor();
+int neededRightParenArithmetic = 0;
 
 
 int main(){
@@ -50,9 +55,6 @@ int main(){
     token = NULL;
     token = (char*)malloc(sizeof(char)+1);
 
-    // expr = NULL;
-    // expr = (char*)malloc(sizeof(char)+1);
-    // expr[0] = '\0';
 
     //read file
     stmt();
@@ -64,41 +66,44 @@ int main(){
 
 void getNextToken(){
 
-
-    token[0] = '\0';
-
-    currentChar[0]=fgetc(symbolTable);
-    currentChar[1]='\0';
-
-    while(currentChar[0]!='~'){
-
-        token = (char *)realloc(token, (strlen(token) + strlen(currentChar)) * sizeof(char) + 1);
-        strcat(token,currentChar);
+        token[0] = '\0';
 
         currentChar[0]=fgetc(symbolTable);
         currentChar[1]='\0';
-    }
 
+    if(currentChar[0]!=EOF){
+        while(currentChar[0]!='~'){
 
-    currentChar[0]=fgetc(symbolTable);
-    currentChar[1]='\0';
+            token = (char *)realloc(token, (strlen(token) + strlen(currentChar)) * sizeof(char) + 1);
+            strcat(token,currentChar);
 
+            currentChar[0]=fgetc(symbolTable);
+            currentChar[1]='\0';
+        }
 
-
-    while(currentChar[0]!='\n'){
-
-        lexeme = (char *)realloc(lexeme, (strlen(lexeme) + strlen(currentChar)) * sizeof(char) + 1);
-        strcat(lexeme,currentChar);
 
         currentChar[0]=fgetc(symbolTable);
         currentChar[1]='\0';
+
+
+
+        while(currentChar[0]!='\n' && currentChar[0]!=EOF){
+
+            lexeme = (char *)realloc(lexeme, (strlen(lexeme) + strlen(currentChar)) * sizeof(char) + 1);
+            strcat(lexeme,currentChar);
+
+            currentChar[0]=fgetc(symbolTable);
+            currentChar[1]='\0';
+        }
+
+        space[0] = ' ';
+        space[1] = '\0';
+
+        lexeme = (char *)realloc(lexeme, (strlen(lexeme) + strlen(space)) * sizeof(char) + 1);
+        strcat(lexeme,space);
+
+        
     }
-
-    space[0] = ' ';
-    space[1] = '\0';
-
-    lexeme = (char *)realloc(lexeme, (strlen(lexeme) + strlen(space)) * sizeof(char) + 1);
-    strcat(lexeme,space);
 
 
 
@@ -173,7 +178,7 @@ void declaration_stmt(){
         //arithmetic_expr();
 
         expr();
-
+       
     }else{
         printf("\nerror");
     }
@@ -190,67 +195,14 @@ bool resv_word(){
         return false;
     }
 
-
 }
 
-
-bool const_wordCharBool(){
-
-    if(strcmp(token,"CONSTWORD")==0 || strcmp(token,"CONSTCHARACTER")==0){
-        printf("%s ", token);
-        return true;
-    }
-    else if(strcmp(token,"true")==0 || strcmp(token,"false")==0){
-        printf("%s ", token);
-        return true;
-    }
-    else{
-        return false;
-    }
-
-}
-
-bool arithmetic_expr(){
-
-    //arithmetic_term
-    if(arithmetic_term){
-        printf("%s ", token);
-        return true;
-    }
-    // else if(){
-
-    // }
-    else{
-        return false;
-    }
-
-}
-
-bool arithmetic_term(){
-
-    //arithmetic_term
-    if(strcmp(token,"IDENTIFIER")==0 || strcmp(token,"CONSTNUM")==0 || strcmp(token,"CONSTDECIMAL")==0){
-        return true;
-    }
-    else{
-        return false;
-    }
-
-}
-
-bool highest(){
-
-    if(arithmetic_term){
-
-    }
-
-}
 
 void expr(){
     // pwedeng arithmetic, boolean, and logical expr
     bool merongBooleanOperator = true; // if may sunod pang boolean operator yung expr
 
-    printf(" <expr>{");
+    //printf(" <expr>{");
     merongBooleanOperator=lowest_logic_expr();
 
     while(merongBooleanOperator==true)
@@ -259,18 +211,19 @@ void expr(){
         merongBooleanOperator=lowest_logic_expr();
     }
     
-    if (maykapartnernaparenthesis==false)
-    {
+    if (neededRightParen == 0)
+    {   
         if(strcmp(token,";")!=0 && strcmp(token,"NEWLINE")!=0)
         {   
             while(strcmp(token,"NEWLINE")!=0)
             {
                 getNextToken(); // error until newline is encountered
             }
+            
             printf("\nWALA SA RULES");
         }
     }
-
+    
     return;    
     printf("\n  <expr>}");
 
@@ -333,10 +286,9 @@ bool low_logic_expr()
 
 bool expr_factor()
 {
+    
 
-
-    if (strcmp(token,"true")==0 || strcmp(token,"false")==0 || strcmp(token,"IDENTIFIER")==0 
-        || strcmp(token, "CONSTNUMBER")==0 || strcmp(token,"CONSTDECIMAL")==0 )
+    if (strcmp(token,"true")==0 || strcmp(token,"false")==0 || strcmp(token,"IDENTIFIER")==0 )
     {
         getNextToken();
         if (strcmp(token,"not")==0)
@@ -347,11 +299,25 @@ bool expr_factor()
         return false;
     }
     //else if identifier, number, decimal, (<expr>), <arithmetic_expr>
-    
+    else if ( strcmp(token, "CONSTNUMBER")==0 || strcmp(token,"CONSTDECIMAL")==0)
+    {
+        
+        // getNextToken();
+        // if (strcmp(token,"not")==0)
+        // {
+        //     return true;
+        // }
+        
+        // return false;
+
+        arithmetic_expr();
+    }
+
+
     else if (strcmp(token,"(")==0)
     {
-            
-        maykapartnernaparenthesis=true;
+        neededRightParen++;
+        // maykapartnernaparenthesis=true;
         getNextToken();
         expr();
         
@@ -366,6 +332,7 @@ bool expr_factor()
             return false;
         }
 
+        neededRightParen--;
         getNextToken();
         if (strcmp(token,"not")==0)
         {
@@ -376,7 +343,7 @@ bool expr_factor()
 
     }
 
-    else if (maykapartnernaparenthesis==false)
+    else if (neededRightParen == 0)
     {
         while(strcmp(token,"NEWLINE")!=0)
         {
@@ -392,4 +359,126 @@ bool expr_factor()
 
 }
 
+void arithmetic_expr()
+{   
+
+    // number yung current token
+
+    bool merongPlusMinusOperator = true;
+    merongPlusMinusOperator = higher_term();
+
+    while(merongPlusMinusOperator==true)
+    {
+        getNextToken();
+        merongPlusMinusOperator = higher_term();
+    }
+    
+    return;
+}
+
+bool higher_term()
+{
+    bool merongMultiDivideOperator = true;
+    merongMultiDivideOperator = term();
+
+    while(merongMultiDivideOperator==true)
+    {
+        getNextToken;
+        merongMultiDivideOperator = term();
+    }
+
+    if (strcmp(token, "+")== 0 || strcmp(token, "-")==0 )
+    {
+        return true;
+    }
+
+    return false;
+}
+
+bool term ()
+{
+    bool merongExponent = true;
+    merongExponent = factor();
+
+    while(merongExponent==true)
+    {
+        
+        getNextToken();
+        
+        merongExponent = factor();
+    }
+
+    if (strcmp(token,"*")==0 || strcmp(token,"/")==0 || strcmp(token,"%%")==0  || strcmp(token, "@")==0)
+  
+    {
+        return true;
+    }
+
+    return false;
+
+}
+
+bool factor ()
+{
+    
+    if (strcmp(token,"CONSTNUMBER")==0 || strcmp(token,"CONSTDECIMAL")==0 || strcmp(token,"IDENTIFIER")==0)
+    {
+        getNextToken();
+        if (strcmp(token,"^")==0)
+        {
+            return true;
+        }
+
+        else return false;
+    }
+
+    else if (strcmp(token,"(")==0)
+    {   
+        neededRightParenArithmetic++;
+        getNextToken();
+        
+        arithmetic_expr();
+
+        if(strcmp(token,")")!=0)
+        {
+            printf("MISSING LPAREN ARITHMETIC\n");
+            return false;
+        }
+
+        neededRightParenArithmetic--;
+        getNextToken();
+        if (strcmp(token,"not")==0)
+        {
+            return true;
+        }
+    }
+
+    else 
+    {
+        printf("\nInvalid arithmetic factor (%s)", token);
+        getNextToken();
+        return false;
+    }
+
+
+}
+
+
+/*
+<arithmetic_expr> -> 
+   higher_term { "+" higher_term | "-" higher_term  } 
+
+higher_term ->
+   term { "*" term | "/" term | "@"  term | "%" term}.
+
+term -> 
+   factor { "^" factor } 
+
+arithmetic_factor -> 
+    <factor> |  "(<arithmetic_expr>)"
+
+<factor> ->
+   <const_NumDec> |  identifier  
+
+*/
 
