@@ -18,6 +18,7 @@ void declaration_stmt(); //check if declaration stmt
 void error(char message[]); //display error message
 bool resv_word(); //check if resv_word
 bool const_wordCharBool();//check if the toke is a CONSTWORD | CONSTCHARACTER | false | true
+void simple_stmt():
 
 void lowest_logic_expr();
 void lower_logic_expr();
@@ -30,6 +31,7 @@ void factor();
 void expr_factor();
 void expr();
 void arithmetic_expr();
+void arithmetic_factor();
 void higher_term();
 void term();
 
