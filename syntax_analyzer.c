@@ -499,6 +499,50 @@ void compound_stmt()
             }
         }
     }
+    else if (strcmp(token, "match") == 0)
+    {
+        printf("\n-><match_stmt>{");
+        printf("\nmatch");
+
+        expect("IDENTIFIER");
+        expect(":");
+        expect("{");
+        expect("NEWLINE");
+        getNextToken();
+
+        while (strcmp(token, "}") != 0)
+        {
+            printf("\ncase");
+            getNextToken();
+            if (strcmp(token, "!") == 0)
+            {
+                expr();
+            }
+            else
+            {
+                expr();
+            }
+
+            if (strcmp(token, ":") == 0)
+            {
+                printf("\n:");
+            }
+            expect("{");
+            expect("NEWLINE");
+            getNextToken();
+            // while (strcmp(token, "end") != 0)
+            // {
+            //     stmt();
+            //     // getNextToken();
+            // }
+            stmt();
+            getNextToken();
+            printf("asdasdasd%sasdasdasdas", token);
+
+            getNextToken();
+        }
+        // printf("asdasdasd%sasdasdasdas", token);
+    }
 }
 
 
