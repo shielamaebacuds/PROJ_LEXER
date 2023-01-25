@@ -190,12 +190,35 @@ int simple_stmt(){
         getNextToken();
     }
     else if(strcmp(token,"list")==0){
-        printf("%s ", token);
-        expect("IDENTIFIER");
-        expect("=");
-        expect("[");
-        getNextToken();
-        const_wordCharBool();
+       printf("\n-><list_stmt>");
+       printf("\nlist");
+       expect("IDENTIFIER");
+       expect("=");
+       expect("[");
+       getNextToken();
+       if(const_wordCharBool()||const_numDec()){
+         printf("\n%s",token);
+       }
+       else{
+        error("\nerror: unexpected symbol");
+       }
+       getNextToken();
+       while(const_wordCharBool()||const_numDec()|| token[0]==',' || token[0]==']'){
+
+            if(token[0]==','){
+                printf("\n%s",token);
+            }
+            getNextToken();
+            if(const_wordCharBool()||const_numDec()){
+                printf("\n%s",token);
+            }
+            getNextToken();
+            if(token[0]==']'){
+                printf("\n%s",token);
+                break;
+            }
+       }
+       getNextToken();
 
     }
     else{
