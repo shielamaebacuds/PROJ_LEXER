@@ -12,13 +12,13 @@ char space[2];
 char *token;
 char *tokenLine;
 
-void getNextToken(); // getting the next token in the symbol table
-void stmt(); //check whether the stmt is simple or compound
-void expect(char expectedToken[]); //chek if the next token is the same as the expectedToken
-void declaration_stmt(); //check if declaration stmt
-void error(char message[]); //display error message
-bool resv_word(); //check if resv_word
-bool const_wordCharBool();//check if the toke is a CONSTWORD | CONSTCHARACTER | false | true
+void getNextToken();               // getting the next token in the symbol table
+void stmt();                       // check whether the stmt is simple or compound
+void expect(char expectedToken[]); // chek if the next token is the same as the expectedToken
+void declaration_stmt();           // check if declaration stmt
+void error(char message[]);        // display error message
+bool resv_word();                  // check if resv_word
+bool const_wordCharBool();         // check if the toke is a CONSTWORD | CONSTCHARACTER | false | true
 int line;
 
 void lowest_logic_expr();
@@ -32,9 +32,11 @@ int factor();
 void expr_factor();
 void expr();
 void arithmetic_expr();
+void arithmetic_factor();
 void higher_term();
 void term();
 
+void compound_stmt();
 int simple_stmt();
 
 int main(){
@@ -142,7 +144,7 @@ void stmt(){
     printf("\n-><stmt>");
     if(strcmp(token,"if")==0 || strcmp(token,"else")==0 || strcmp(token,"foreach")==0 || strcmp(token,"match") ==0|| strcmp(token,"while")==0){
         ;
-        //compound_stmt(lexeme,token);
+        compound_stmt();
     }
     else{
 
@@ -272,11 +274,39 @@ return 1;
 
 }
 
-/*
-void compound_stmt(){
+void compound_stmt()
+{
+    printf("\n(LINE%d)", line);
+    printf("\n-><compound_stmt>");
 
+    if (strcmp(token, "if") == 0)
+    {
+        printf("\n-><if_stmt>{");
+        printf("\nif");
+        expr();
+        if (strcmp(token, "then") == 0)
+        {
+            printf("\nthen");
+            expect("{");
+            expect("NEWLINE");
+        }
+        getNextToken();
+        while (strcmp(token, "}") != 0)
+        {
+            stmt();
+            getNextToken();
+        }
+        if (strcmp(token, "}") == 0)
+        {
+            printf("}");
+            getNextToken();
+        }
+    }
+    else if (strcmp(token, "else") == 0)
+    {
+        ;
+    }
 }
-*/
 
 
 bool resv_word(){
@@ -386,7 +416,6 @@ void expr(){
     }
 
     printf("\n}");
-    return 0;
 }
 
 
