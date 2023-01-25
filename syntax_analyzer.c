@@ -10,6 +10,7 @@ int position;
 char *lexeme;
 char space[2];
 char *token;
+char *tokenLine;
 
 void getNextToken(); // getting the next token in the symbol table
 void stmt(); //check whether the stmt is simple or compound
@@ -18,7 +19,7 @@ void declaration_stmt(); //check if declaration stmt
 void error(char message[]); //display error message
 bool resv_word(); //check if resv_word
 bool const_wordCharBool();//check if the toke is a CONSTWORD | CONSTCHARACTER | false | true
-void simple_stmt();
+int line;
 
 void lowest_logic_expr();
 void lower_logic_expr();
@@ -27,13 +28,14 @@ bool logical_operator();
 bool arithmetic_operator();
 bool const_numDec();
 void low_logic_expr();
-void factor();
+int factor();
 void expr_factor();
 void expr();
 void arithmetic_expr();
-void arithmetic_factor();
 void higher_term();
 void term();
+
+int simple_stmt();
 
 int main(){
     symbolTable = fopen("symbol_table.txt", "r");
@@ -53,10 +55,18 @@ int main(){
     token = NULL;
     token = (char*)malloc(sizeof(char)+1);
 
+    tokenLine = NULL;
+    tokenLine = (char*)malloc(sizeof(char)+1);
+    tokenLine[0] = '\0';
 
-    //read file
-    stmt();
-    printf("\n%s", lexeme);
+    line = 1;
+
+    while(currentChar[0]!=EOF){
+        getNextToken();
+        stmt();
+        printf("\nLEXEME:%s\n\n", lexeme);
+        lexeme[0] = '\0';
+    }
     fclose(symbolTable);
 
     return 0;
@@ -99,25 +109,22 @@ void getNextToken(){
         lexeme = (char *)realloc(lexeme, (strlen(lexeme) + strlen(space)) * sizeof(char) + 1);
         strcat(lexeme,space);
 
+        tokenLine = (char *)realloc(tokenLine, (strlen(tokenLine) + strlen(token)) * sizeof(char) + 1);
+        strcat(tokenLine,token);
+
+        tokenLine = (char *)realloc(tokenLine, (strlen(tokenLine) + strlen(space)) * sizeof(char) + 1);
+        strcat(tokenLine,space);
+
 }
 
 
 void expect(char expectedToken[]){
     getNextToken();
 
-    if(expectedToken[0] == ';'){
-        if(strcmp(token, expectedToken) == 0){
-            printf("\n%s", token);
-            getNextToken();
-        }
-
-    }
-    else {
-        if(strcmp(token,expectedToken) == 0){
-            printf("\n%s", token);
-        }else{
+    if(strcmp(token,expectedToken) == 0){
+        printf("\n%s", token);
+    }else{
         error("error: unexpected symbol");
-        }
     }
 
 
@@ -132,8 +139,6 @@ void error(char message[]){
 
 
 void stmt(){
-
-    getNextToken();
     printf("\n-><stmt>");
     if(strcmp(token,"if")==0 || strcmp(token,"else")==0 || strcmp(token,"foreach")==0 || strcmp(token,"match") ==0|| strcmp(token,"while")==0){
         ;
@@ -145,18 +150,16 @@ void stmt(){
     }
 }
 
-void simple_stmt(){
+int simple_stmt(){
+    printf("\n(LINE%d)", line);
 
     printf("\n-><simple_stmt>");
-
-
     if(resv_word()){
         printf("\n-><declarative_stmt>");
         printf("\n<resv_word>");
         expect("IDENTIFIER");
         expect("=");
         expr();
-        //printf("\n%s", lexeme);
     }
     else if(strcmp(token,"IDENTIFIER")==0){
         ;
@@ -180,8 +183,44 @@ void simple_stmt(){
 
     }
     else{
-        error("error");
+        error("error: unexpected symbol");
     }
+
+
+
+    //for newline and optional semicolon
+    if(strcmp(token,"NEWLINE")==0){
+        printf("\n%s", token);
+    }
+    else if(token[0]==';'){
+        printf("\n%s", token);
+        getNextToken();
+
+        if(strcmp(token,"NEWLINE")==0){
+            printf("\n%s", token);
+        }
+        else{
+            error("error: unexpected symbol");
+            return 0;
+        }
+    }
+    else if(currentChar[0]!=EOF){
+        return 1;
+    }
+    else{
+        error("error: unexpected symbol (missing a NEWLINE)");
+
+        while(strcmp(token,"NEWLINE")==0 || currentChar[0]!=EOF){
+            getNextToken();
+        }
+    }
+
+    printf("\nTOKEN LINE:%s", tokenLine);
+    tokenLine[0]='\0';
+    line = line +1;
+
+return 1;
+
 }
 
 /*
@@ -254,7 +293,6 @@ bool const_wordCharBool(){
 bool const_numDec(){
 
     if(strcmp(token,"CONSTNUMBER")==0 || strcmp(token,"CONSTDECIMAL")==0){
-        //printf("%s ", token);
         return true;
     }
     else{
@@ -275,28 +313,31 @@ void expr(){
 
     while(const_numDec()|| token[0]=='(' || token[0]==')' || strcmp(token, "IDENTIFIER") == 0 || const_wordCharBool() || boolean_operator() || logical_operator() || arithmetic_operator()){
 
-        printf("\n\t<lowest_logic_expr>{");
-        lowest_logic_expr(); //get the leftmost term
+            printf("\n\t<lowest_logic_expr>{");
+            lowest_logic_expr(); //get the leftmost term
 
-        if(strcmp(token, "IDENTIFIER") == 0 || const_wordCharBool() || const_numDec() ){//unexpected symbol eg 12 + 3 12
-            error("unexpected symbol");
-        }
-        else if(token[0]==')'){//missing '(' symbol eg 12 +3 )
-            error("missing ( symbol");
-        }
-        printf("\n\t\t\t\t\t\t\t\t\t}");
-        printf("\n\t\t\t\t\t\t\t\t}");
-        printf("\n\t\t\t\t\t\t\t}");
-        printf("\n\t\t\t\t\t\t}");
-        printf("\n\t\t\t\t\t}");
-        printf("\n\t\t\t\t}");
-        printf("\n\t\t\t}");
-        printf("\n\t\t}");
-        printf("\n\t}");
 
-        getNextToken();
+
+            printf("\n\t\t\t\t\t\t\t\t\t}");
+            printf("\n\t\t\t\t\t\t\t\t}");
+            printf("\n\t\t\t\t\t\t\t}");
+            printf("\n\t\t\t\t\t\t}");
+            printf("\n\t\t\t\t\t}");
+            printf("\n\t\t\t\t}");
+            printf("\n\t\t\t}");
+            printf("\n\t\t}");
+            printf("\n\t}");
+
+            if(const_numDec()|| token[0]=='(' || token[0]==')' || strcmp(token, "IDENTIFIER") == 0 || const_wordCharBool() || boolean_operator() || logical_operator() || arithmetic_operator()){
+                getNextToken();
+            }else{
+                break;
+            }
+
     }
-printf("\n}");
+
+    printf("\n}");
+    return 0;
 }
 
 
@@ -323,17 +364,18 @@ void lowest_logic_expr(){
 
                 printf("\n\t<lowest_logic_expr>{");
                 lowest_logic_expr();
+                break;
 
             }
             else{//unexpected symbol eg 12+3>
-                error("\n\tunexpected symbol");
+                error("\n\tunexpected symbol7");
             }
-            //break;
+
         }
         else{
             printf("\n\t\t<lower_logic_expr>{");
             lower_logic_expr(); //get leftmost lower_logic_expr of lowest_logic_expr()
-
+            break;
         }
 
         getNextToken();
@@ -363,10 +405,11 @@ void lower_logic_expr(){
 
                     printf("\n\t\t<lower_logic_expr>{");
                     lower_logic_expr();
+                    break;
 
                 }
                 else{
-                    error("\t\tunexpected symbol");
+                    error("\t\tunexpected symbol6");
                 }
                 break;
         }
@@ -377,7 +420,7 @@ void lower_logic_expr(){
         else{
             printf("\n\t\t\t<low_logic_expr>{");
             low_logic_expr();
-
+            break;
         }
 
 
@@ -410,10 +453,10 @@ void low_logic_expr(){
 
                     printf("\n\t\t\t<low_logic_expr>{");
                     low_logic_expr();
-
+                    break;
                 }
                 else{
-                    error("\t\tunexpected symbol");
+                    error("\t\tunexpected symbol5");
                 }
                 break;
         }
@@ -428,6 +471,8 @@ void low_logic_expr(){
         else{
             printf("\n\t\t\t\t<expr_factor>{");
             expr_factor();
+
+            break;
         }
         getNextToken();
     }
@@ -453,12 +498,12 @@ void expr_factor(){
 
                     printf("\n\t\t\t\t<expr_factor>{");
                     expr_factor();
-
+                    break;
                 }
                 else{
-                    error("\t\tunexpected symbol3");
+                    error("\t\tunexpected symbol43");
                 }
-                break;
+               break;
         }
         else if(strcmp(token, "or") == 0){
             lowest_logic_expr();
@@ -481,9 +526,11 @@ void expr_factor(){
             printf("\n\t\t\t\t\t<arithmetic_expr>{");
             printf("\n\t\t\t\t\t\t<higher_term>{");
             higher_term();
+            break;
         }
         else{
             printf("\n\t\t\t\t\t\t%s", token);
+            break;
         }
         getNextToken();
     }
@@ -506,10 +553,10 @@ void higher_term(){
 
                     printf("\n\t\t\t\t\t\t<higher_term>{");
                     higher_term();
-
+                    break;
                 }
                 else{
-                    error("\t\t\t\t\tunexpected symbol");
+                    error("\t\t\t\t\tunexpected symbol3");
                 }
                 break;
         }
@@ -536,9 +583,11 @@ void higher_term(){
         else{
             printf("\n\t\t\t\t\t\t\t<term>{");
             term();
+            break;
         }
         getNextToken();
     }
+
 
 }
 
@@ -557,10 +606,10 @@ void term(){
 
                     printf("\n\t\t\t\t\t\t\t<term>{");
                     term();
-
+                    break;
                 }
                 else{
-                    error("\t\t\t\t\tunexpected symbol");
+                    error("\t\t\t\t\tunexpected symbol2");
                 }
                 break;
         }
@@ -592,6 +641,8 @@ void term(){
         else{
           printf("\n\t\t\t\t\t\t\t\t<arithmetic_factor>{");
            arithmetic_factor();
+           break;
+
         }
         getNextToken();
     }
@@ -638,6 +689,8 @@ void arithmetic_factor(){
         else if(strcmp(token, "IDENTIFIER") == 0 || const_numDec()){
           printf("\n\t\t\t\t\t\t\t\t\t<factor>{");
            factor();
+           break;
+
         }
 
         getNextToken();
@@ -646,7 +699,7 @@ void arithmetic_factor(){
 }
 
 
-void factor(){
+int factor(){
 
 
     while(const_numDec()|| token[0]=='(' || token[0]==')' || strcmp(token, "IDENTIFIER") == 0 || const_wordCharBool() || boolean_operator() || logical_operator() || arithmetic_operator()){
@@ -660,10 +713,11 @@ void factor(){
 
                 printf("\n\t\t\t\t\t\t\t\t\t<factor>{");
                 factor();
+                break;
 
             }
             else{
-                error("\t\t\t\t\tunexpected symbol");
+                error("\t\t\t\t\tunexpected symbol1");
             }
             break;
         }
@@ -697,16 +751,23 @@ void factor(){
         }
         else if(strcmp(token, "IDENTIFIER") == 0){
             printf("\n\t\t\t\t\t\t\t\t\t\t%s", token);
+
+
         }
         else if(const_numDec()){
             printf("\n\t\t\t\t\t\t\t\t\t\t<const_numDec>");
             printf("\n\t\t\t\t\t\t\t\t\t\t\t%s", token);
             printf("\n\t\t\t\t\t\t\t\t\t\t}");
+
         }
+
+
         getNextToken();
+
     }
 
-
-
 }
+
+
+
 
