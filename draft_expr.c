@@ -112,7 +112,7 @@ void expr(){
     while(const_numDec()|| token[0]=='(' || token[0]==')' || strcmp(token, "IDENTIFIER") == 0 || const_wordCharBool() || boolean_operator() || logical_operator() || arithmetic_operator()){
 
         printf("\n\t<lowest_logic_expr>{");
-        lowest_logic_expr(); //get the leftmost lowest_logic_expr of expr()
+        lowest_logic_expr(); //get the leftmost term
 
         if(strcmp(token, "IDENTIFIER") == 0 || const_wordCharBool() || const_numDec() ){//unexpected symbol eg 12 + 3 12
             error("unexpected symbol");
@@ -120,6 +120,8 @@ void expr(){
         else if(token[0]==')'){//missing '(' symbol eg 12 +3 )
             error("missing ( symbol");
         }
+        printf("\n\t\t\t\t\t\t\t\t\t}");
+        printf("\n\t\t\t\t\t\t\t\t}");
         printf("\n\t\t\t\t\t\t\t}");
         printf("\n\t\t\t\t\t\t}");
         printf("\n\t\t\t\t\t}");
@@ -139,6 +141,8 @@ void lowest_logic_expr(){
     while(const_numDec()|| token[0]=='(' || token[0]==')' || strcmp(token, "IDENTIFIER") == 0 || const_wordCharBool() || boolean_operator() || logical_operator() || arithmetic_operator()){
 
         if(strcmp(token, "or") == 0 ){
+            printf("\n\t\t\t\t\t\t\t\t\t}");
+            printf("\n\t\t\t\t\t\t\t\t}");
             printf("\n\t\t\t\t\t\t\t}");
             printf("\n\t\t\t\t\t\t}");
             printf("\n\t\t\t\t\t}");
@@ -180,6 +184,8 @@ void lower_logic_expr(){
 
     while(const_numDec()|| token[0]=='(' || token[0]==')' || strcmp(token, "IDENTIFIER") == 0 || const_wordCharBool() || boolean_operator() || logical_operator() || arithmetic_operator()){
         if(strcmp(token, "and") == 0){
+                printf("\n\t\t\t\t\t\t\t\t\t}");
+                printf("\n\t\t\t\t\t\t\t\t}");
                 printf("\n\t\t\t\t\t\t\t}");
                 printf("\n\t\t\t\t\t\t}");
                 printf("\n\t\t\t\t\t}");
@@ -226,6 +232,8 @@ void low_logic_expr(){
    while(const_numDec()|| token[0]=='(' || token[0]==')' || strcmp(token, "IDENTIFIER") == 0 || const_wordCharBool() || boolean_operator() || logical_operator() || arithmetic_operator()){
 
         if(strcmp(token, "not") == 0){
+                printf("\n\t\t\t\t\t\t\t\t\t}");
+                printf("\n\t\t\t\t\t\t\t\t}");
                 printf("\n\t\t\t\t\t\t\t}");
                 printf("\n\t\t\t\t\t\t}");
                 printf("\n\t\t\t\t\t}");
@@ -268,6 +276,8 @@ void expr_factor(){
     while(const_numDec()|| token[0]=='(' || token[0]==')' || strcmp(token, "IDENTIFIER") == 0 || const_wordCharBool() || boolean_operator() || logical_operator() || arithmetic_operator()){
 
         if(boolean_operator()){
+                printf("\n\t\t\t\t\t\t\t\t\t}");
+                printf("\n\t\t\t\t\t\t\t\t}");
                 printf("\n\t\t\t\t\t\t\t}");
                 printf("\n\t\t\t\t\t\t}");
                 printf("\n\t\t\t\t\t}");
@@ -305,7 +315,8 @@ void expr_factor(){
         }
         else if(const_numDec() || strcmp(token, "IDENTIFIER") == 0 || arithmetic_operator()){
             printf("\n\t\t\t\t\t<arithmetic_expr>{");
-            arithmetic_expr();
+            printf("\n\t\t\t\t\t\t<higher_term>{");
+            higher_term();
         }
         else{
             printf("\n\t\t\t\t\t\t%s", token);
@@ -315,57 +326,13 @@ void expr_factor(){
 
 }
 
-void arithmetic_expr(){
-
-    while(const_numDec()|| token[0]=='(' || token[0]==')' || strcmp(token, "IDENTIFIER") == 0 || const_wordCharBool() || boolean_operator() || logical_operator() || arithmetic_operator()){
-
-        if(token[0] == '+' || token[0] == '-'){
-                printf("\n\t\t\t\t\t\t\t}");
-                printf("\n\t\t\t\t\t\t}");
-                printf("\n\t\t\t\t\t}");
-                printf("\n\n\t\t\t\t\t%s\n", token);
-                getNextToken();
-
-                if(strcmp(token, "IDENTIFIER") == 0 || const_numDec() || token[0]=='(' ){//get next lower_logic_expr of lowest_logic_expr()
-
-                    printf("\n\t\t\t\t\t<arithmetic_expr>{");
-                    arithmetic_expr();
-
-                }
-                else{
-                    error("\t\t\t\t\tunexpected symbol");
-                }
-                break;
-        }
-        else if(strcmp(token, "or") == 0){
-            lowest_logic_expr();
-            break;
-        }
-        else if(strcmp(token, "and") == 0){
-            lower_logic_expr();
-            break;
-        }
-        else if(strcmp(token, "not") == 0){
-            low_logic_expr();
-            break;
-        }
-        else if(boolean_operator()){
-            expr_factor();
-            break;
-        }
-        else{
-            printf("\n\t\t\t\t\t\t<higher_term>{");
-            higher_term();
-        }
-        getNextToken();
-    }
-}
-
 void higher_term(){
 
     while(const_numDec()|| token[0]=='(' || token[0]==')' || strcmp(token, "IDENTIFIER") == 0 || const_wordCharBool() || boolean_operator() || logical_operator() || arithmetic_operator()){
 
-        if(token[0] == '*' || token[0] == '/' || token[0] == '@' || token[0] == '%' ){
+        if(token[0] == '+' || token[0] == '-'){
+                printf("\n\t\t\t\t\t\t\t\t\t}");
+                printf("\n\t\t\t\t\t\t\t\t}");
                 printf("\n\t\t\t\t\t\t\t}");
                 printf("\n\t\t\t\t\t\t}");
                 printf("\n\n\t\t\t\t\t\t%s\n", token);
@@ -398,10 +365,9 @@ void higher_term(){
             expr_factor();
             break;
         }
-        else if(token[0] == '+' || token[0] == '-'){
-            arithmetic_expr();
+        else if(const_wordCharBool()){
+            expr_factor();
             break;
-
         }
         else{
             printf("\n\t\t\t\t\t\t\t<term>{");
@@ -416,7 +382,9 @@ void term(){
 
     while(const_numDec()|| token[0]=='(' || token[0]==')' || strcmp(token, "IDENTIFIER") == 0 || const_wordCharBool() || boolean_operator() || logical_operator() || arithmetic_operator()){
 
-        if(token[0] == '^'){
+        if(token[0] == '*' || token[0] == '/' || token[0] == '@' || token[0] == '%'){
+                printf("\n\t\t\t\t\t\t\t\t\t}");
+                printf("\n\t\t\t\t\t\t\t\t}");
                 printf("\n\t\t\t\t\t\t\t}");
                 printf("\n\n\t\t\t\t\t\t\t%s\n", token);
                 getNextToken();
@@ -449,18 +417,17 @@ void term(){
             break;
         }
         else if(token[0] == '+' || token[0] == '-'){
-            arithmetic_expr();
+            higher_term();
             break;
 
         }
-        else if(token[0] == '*' || token[0] == '/' || token[0] == '@' || token[0] == '%' ){
-            higher_term();
+        else if(const_wordCharBool()){
+            expr_factor();
             break;
         }
         else{
-            printf("\n\t\t\t\t\t\t\t\t<factor>{");
-            printf("\n\t\t\t\t\t\t\t\t\t%s", token);
-            printf("\n\t\t\t\t\t\t\t\t}");
+          printf("\n\t\t\t\t\t\t\t\t<arithmetic_factor>{");
+           arithmetic_factor();
         }
         getNextToken();
     }
@@ -468,6 +435,117 @@ void term(){
 
 
 }
+
+
+void arithmetic_factor(){
+
+    while(const_numDec()|| token[0]=='(' || token[0]==')' || strcmp(token, "IDENTIFIER") == 0 || const_wordCharBool() || boolean_operator() || logical_operator() || arithmetic_operator()){
+
+
+        if(strcmp(token, "or") == 0){
+            lowest_logic_expr();
+            break;
+        }
+        else if(strcmp(token, "and") == 0){
+            lower_logic_expr();
+            break;
+        }
+        else if(strcmp(token, "not") == 0){
+            low_logic_expr();
+            break;
+        }
+        else if(boolean_operator()){
+            expr_factor();
+            break;
+        }
+        else if(token[0] == '+' || token[0] == '-'){
+            higher_term();
+            break;
+
+        }
+        else if(token[0] == '*' || token[0] == '/' || token[0] == '@' || token[0] == '%' ){
+            term();
+            break;
+        }
+        else if(const_wordCharBool()){
+            expr_factor();
+            break;
+        }
+        else if(strcmp(token, "IDENTIFIER") == 0 || const_numDec()){
+          printf("\n\t\t\t\t\t\t\t\t\t<factor>{");
+           factor();
+        }
+
+        getNextToken();
+    }
+
+}
+
+
+void factor(){
+
+
+    while(const_numDec()|| token[0]=='(' || token[0]==')' || strcmp(token, "IDENTIFIER") == 0 || const_wordCharBool() || boolean_operator() || logical_operator() || arithmetic_operator()){
+
+        if(token[0]=='^'){
+            printf("\n\t\t\t\t\t\t\t\t\t}");
+            printf("\n\n\t\t\t\t\t\t\t\t\t%s\n", token);
+            getNextToken();
+
+            if(strcmp(token, "IDENTIFIER") == 0 || const_numDec() || token[0]=='(' ){//get next lower_logic_expr of lowest_logic_expr()
+
+                printf("\n\t\t\t\t\t\t\t\t\t<factor>{");
+                factor();
+
+            }
+            else{
+                error("\t\t\t\t\tunexpected symbol");
+            }
+            break;
+        }
+        else if(strcmp(token, "or") == 0){
+            lowest_logic_expr();
+            break;
+        }
+        else if(strcmp(token, "and") == 0){
+            lower_logic_expr();
+            break;
+        }
+        else if(strcmp(token, "not") == 0){
+            low_logic_expr();
+            break;
+        }
+        else if(boolean_operator()){
+            expr_factor();
+            break;
+        }
+        else if(token[0] == '+' || token[0] == '-'){
+            higher_term();
+            break;
+        }
+        else if(token[0] == '*' || token[0] == '/' || token[0] == '@' || token[0] == '%' ){
+            term();
+            break;
+        }
+        else if(const_wordCharBool()){
+            expr_factor();
+            break;
+        }
+        else if(strcmp(token, "IDENTIFIER") == 0){
+            printf("\n\t\t\t\t\t\t\t\t\t\t%s", token);
+        }
+        else if(const_numDec()){
+            printf("\n\t\t\t\t\t\t\t\t\t\t<const_numDec>");
+            printf("\n\t\t\t\t\t\t\t\t\t\t\t%s", token);
+            printf("\n\t\t\t\t\t\t\t\t\t\t}");
+        }
+        getNextToken();
+    }
+
+
+
+}
+
 
 bool boolean_operator(){
 
