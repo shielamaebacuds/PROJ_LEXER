@@ -375,6 +375,12 @@ int simple_stmt(){
         }
 
 
+    }else if(strcmp(token,"EOF")==0){
+        return 0;
+
+    }
+    else{
+        error("unexpected symbol");
     }
 
 
@@ -591,6 +597,7 @@ void compound_stmt()
             getNextToken();
         }
     }
+    
     
 }
 
