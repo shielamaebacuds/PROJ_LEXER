@@ -1,10 +1,12 @@
 num num2 = 12 ^ 3 + 12
 word school = "PUP"
 boolean is_true = false 
+decimal grade = score 
 
 studentName = "Anne"
 score = 90 + 29 -13
 x = true and false
+var1 = var2
 
 num num2 - 12 ^ 3 + 12
 studentName > "Anne"
