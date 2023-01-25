@@ -62,7 +62,7 @@ if true then{
 
 while x>12 do{
     return(x)
-    while(z==2) do{
+    while z==2 do{
         display(name)
     }
 }
