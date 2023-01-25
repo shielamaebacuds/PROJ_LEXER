@@ -130,6 +130,11 @@ void driverFunction(FILE *f, FILE *symbolTable)
             currentCharacter = getNextCharacter(f);
         }
     }
+    
+    if (currentCharacter == EOF)
+    {
+        fprintf(symbolTable, "EOF~EOF");
+    }
 }
 
 char getNextCharacter(FILE *f)
