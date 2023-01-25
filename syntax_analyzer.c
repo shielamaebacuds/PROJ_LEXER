@@ -101,7 +101,7 @@ int main(){
     fclose(syntaxTable);
 
     return 0;
-
+}
 
 void getNextToken(){
 
