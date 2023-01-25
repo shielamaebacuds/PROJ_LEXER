@@ -292,56 +292,89 @@ int simple_stmt(){
         }  
         ;
     }
-    else if(strcmp(token,"input")==0){
+      else if(strcmp(token,"input")==0){
         printf("\n-><input_stmt>");
         printf("\ninput");
         expect("(");
+
         getNextToken();
-        if(const_wordCharBool()){
-            printf("\n%s",token);
+        if(strcmp(token,"CONSTWORD")==0)
+        {
+            while((strcmp(token,"CONSTWORD")==0 || strcmp(token,"IDENTIFIER")==0))
+            {
+                printf("\n%s",token);
+                getNextToken();
+                if (strcmp(token,",")==0)
+                {
+                    printf("\n%s",token);
+                    getNextToken();
+                }
+
+                else if(strcmp(token,")")==0)
+                {
+                    printf("\n%s",token);
+                    getNextToken();
+                    break;
+                }
+
+                else
+                {
+                    error("unexpected symbol");
+                    // getNextToken();
+                    break;
+                }
+
+            }
+
+            if(strcmp(token,"NEWLINE")!=0)
+            {
+                error("unexpected symbol");
+            }
         }
-        else{
-            error("\nerror: unexpected symbol");
-        }
-        expect(",");
-        expect("IDENTIFIER");
-        expect(")");
-        getNextToken();
     }
     else if(strcmp(token,"list")==0){
-       printf("\n-><list_stmt>");
-       printf("\nlist");
-       expect("IDENTIFIER");
-       expect("=");
-       expect("[");
-       getNextToken();
-       if(const_wordCharBool()||const_numDec()){
-         printf("\n%s",token);
-       }
-       else{
-        error("\nerror: unexpected symbol");
-       }
-       getNextToken();
-       while(const_wordCharBool()||const_numDec()|| token[0]==',' || token[0]==']'){
+      printf("\n-><list_stmt>");
+        printf("\nlist");
+        expect("IDENTIFIER");
+        expect("=");
+        expect("[");
 
-            if(token[0]==','){
+        getNextToken();
+        if(const_numDec() || const_wordCharBool() || strcmp(token,"IDENTIFIER")==0)
+        {
+            while(const_numDec() || const_wordCharBool() || strcmp(token,"IDENTIFIER")==0)
+            {
                 printf("\n%s",token);
-            }
-            getNextToken();
-            if(const_wordCharBool()||const_numDec()){
-                printf("\n%s",token);
-            }
-            getNextToken();
-            if(token[0]==']'){
-                printf("\n%s",token);
-                break;
-            }
-       }
-       getNextToken();
+                getNextToken();
+                if (strcmp(token,",")==0)
+                {
+                    printf("\n%s",token);
+                    getNextToken();
+                }
 
-    }
-    else{
-        error("error: unexpected symbol");
+                else if(strcmp(token,"]")==0)
+                {
+                    printf("\n%s",token);
+                    getNextToken();
+                    break;
+                }
+
+                else
+                {
+                    error("unexpected symbol");
+                    // getNextToken();
+                    break;
+                }
+
+            }
+
+            if(strcmp(token,"NEWLINE")!=0)
+            {
+                error("unexpected symbol");
+            }
+        }
+
+
     }
 
 
