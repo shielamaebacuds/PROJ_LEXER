@@ -2,7 +2,7 @@ num num2 = 12 ^ 3 + 12
 word school = "PUP"
 
 num num2 - 12 ^ 3 + 12
-word school = 
+boolean is_true = false 
 
 studentName = "Anne"
 score = 90 + 29 -13
