@@ -566,6 +566,31 @@ void compound_stmt()
             getNextToken();
         }
     }
+    else if (strcmp(token, "foreach") == 0){
+        printf("\n-><foreach_stmt>{");
+        printf("\nforeach");
+        expect("IDENTIFIER");
+        expect("in");
+        expect("IDENTIFIER");
+        getNextToken();
+
+        if (strcmp(token, "{") == 0)
+        {
+            printf("\n{");
+            expect("NEWLINE");
+        }
+        getNextToken();
+        while (strcmp(token, "}") != 0)
+        {   line = line +1;
+            stmt();
+            getNextToken();
+        }
+        if (strcmp(token, "}") == 0)
+        {
+            printf("}");
+            getNextToken();
+        }
+    }
     
 }
 
