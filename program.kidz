@@ -46,6 +46,13 @@ while x>12 do{
 return(x)
 }
 
+if true then{
+    display(x)
+    if y>2 then{
+        display (y)
+    }
+}
+
 hello 12 +
 
 foreach fruit in fruits{
