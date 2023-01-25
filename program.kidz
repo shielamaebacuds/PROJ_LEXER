@@ -10,6 +10,8 @@ num num2 - 12 ^ 3 + 12
 studentName > "Anne"
 score = 90 +
 
+hello 12 +
+
 display(name)
 display(12+3-2)
 display("hello world")
@@ -46,6 +48,11 @@ while x>12 do{
 return(x)
 }
 
+
+foreach fruit in fruits{
+display(fruit)
+}
+
 if true then{
     display(x)
     if y>2 then{
@@ -60,8 +67,12 @@ while x>12 do{
     }
 }
 
-hello 12 +
-
-foreach fruit in fruits{
-display(fruit)
+foreach color in rainbow{
+    display(color)
+    while true do{
+        x = x + 1
+    }
 }
+
+
+
