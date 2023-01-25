@@ -65,12 +65,25 @@ int main(){
 
     line = 1;
 
-    while(currentChar[0]!=EOF){
+    while(strcmp(token,"EOF")!=0){
         getNextToken();
-        stmt();
-        printf("\nLEXEME:%s\n\n", lexeme);
-        lexeme[0] = '\0';
+
+        if(strcmp(token,"SLCOMMENT")==0||strcmp(token,"MLCOMMENT")==0||token[0]=='a'||strcmp(token,"an")==0){
+
+            getNextToken();
+        }
+        else{
+            stmt();
+            printf("\nLEXEME:%s\n\n", lexeme);
+            lexeme[0] = '\0';
+        }
+
+        printf("\nTOKEN:%s", tokenLine);
+        tokenLine[0]='\0';
+        line = line +1;
+
     }
+    
     fclose(symbolTable);
 
     return 0;
