@@ -606,7 +606,7 @@ void lowest_logic_expr(){
 
             }
             else{//unexpected symbol eg 12+3>
-                error("\n\tunexpected symbol7");
+                error("\n\tunexpected symbol");
             }
 
         }
@@ -647,7 +647,7 @@ void lower_logic_expr(){
 
                 }
                 else{
-                    error("\t\tunexpected symbol6");
+                    error("\t\tunexpected symbol");
                 }
                 break;
         }
@@ -694,7 +694,7 @@ void low_logic_expr(){
                     break;
                 }
                 else{
-                    error("\t\tunexpected symbol5");
+                    error("\t\t\tunexpected symbol");
                 }
                 break;
         }
@@ -739,7 +739,7 @@ void expr_factor(){
                     break;
                 }
                 else{
-                    error("\t\tunexpected symbol43");
+                    error("\t\t\t\tunexpected symbol");
                 }
                break;
         }
@@ -794,7 +794,7 @@ void higher_term(){
                     break;
                 }
                 else{
-                    error("\t\t\t\t\tunexpected symbol3");
+                    error("\t\t\t\t\t\tunexpected symbol");
                 }
                 break;
         }
@@ -847,7 +847,7 @@ void term(){
                     break;
                 }
                 else{
-                    error("\t\t\t\t\tunexpected symbol2");
+                    error("\t\t\t\t\t\t\ttunexpected symbol2");
                 }
                 break;
         }
@@ -955,7 +955,7 @@ int factor(){
 
             }
             else{
-                error("\t\t\t\t\tunexpected symbol1");
+                error("\t\t\t\t\t\t\t\t\ttunexpected symbol1");
             }
             break;
         }
