@@ -297,10 +297,6 @@ void expr_factor(){
             printf("\n\t\t\t\t\t<arithmetic_expr>{");
             arithmetic_expr();
         }
-        else if(token=='('){
-            expr();
-
-        }
         else{
             printf("\n\t\t\t\t\t\t%s", token);
         }
