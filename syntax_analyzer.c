@@ -374,6 +374,7 @@ void compound_stmt()
     {
         printf("\n-><if_stmt>{");
         printf("\nif");
+        getNextToken();
         expr();
         if (strcmp(token, "then") == 0)
         {
@@ -395,7 +396,49 @@ void compound_stmt()
     }
     else if (strcmp(token, "else") == 0)
     {
-        ;
+        printf("\n-><else_stmt>{");
+        printf("\nelse");
+        // printf("asdasdasd%sasdasdasdas", token);
+
+        getNextToken();
+        if (strcmp(token, "then") == 0)
+        {
+            expect("{");
+            expect("NEWLINE");
+            getNextToken();
+            while (strcmp(token, "}") != 0)
+            {
+                stmt();
+                getNextToken();
+            }
+            if (strcmp(token, "}") == 0)
+            {
+                printf("}");
+                getNextToken();
+            }
+        }
+        else if (strcmp(token, "if") == 0)
+        {
+            getNextToken();
+            expr();
+            if (strcmp(token, "then") == 0)
+            {
+                printf("\nthen");
+                expect("{");
+                expect("NEWLINE");
+            }
+            getNextToken();
+            while (strcmp(token, "}") != 0)
+            {
+                stmt();
+                getNextToken();
+            }
+            if (strcmp(token, "}") == 0)
+            {
+                printf("}");
+                getNextToken();
+            }
+        }
     }
 }
 
