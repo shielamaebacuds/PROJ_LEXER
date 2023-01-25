@@ -463,7 +463,7 @@ void compound_stmt()
     {
         printf("\n-><else_stmt>{");
         printf("\nelse");
-        // printf("asdasdasd%sasdasdasdas", token);
+        
 
         getNextToken();
         if (strcmp(token, "then") == 0)
@@ -543,7 +543,7 @@ void compound_stmt()
             // }
             stmt();
             getNextToken();
-            printf("asdasdasd%sasdasdasdas", token);
+            //printf("asdasdasd%sasdasdasdas", token);
 
             getNextToken();
         }
