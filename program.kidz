@@ -1,30 +1,53 @@
-myNum23_
+num num2 = 12 ^ 3 + 12
+word school = "PUP"
 
-+ - / * % ^ @
+num num2 - 12 ^ 3 + 12
+word school = 
 
-== > < != <= >=
+studentName = "Anne"
+score = 90 + 29 -13
 
-and or not
+studentName > "Anne"
+score = 90 +
 
-end if else then case foreach in do match return continue true false list while display input
+display(name)
+display(12+3-2)
+display("hello world")
+display("Name:",studentName)
 
-num decimal word character boolean
+display(name
 
-the a an
+return(name)
+return(12+3-2)
+return("hello world")
+return("Name:",studentName)
 
-#this is a single line comment
+return(name
 
-##this is a 
-multi line comment##
+input("Enter name here:", studName)
 
-= () [] , ; {} :
+input("Enter name here:", studName
 
-1000 12.324 "Hello World" 'x' true false
+list fruits = ["mango","apple","banana"]
 
-` ~  ! $ & | \ . ?
+list fruits ["mango","apple","banana"]
 
-123abc
-1.2.3.4.5
-"string with no ending double quote
-'morethanonechracter'
-'a
+if x>9 then{
+ display(x)
+}
+else if x<9 then{
+display(y)
+}
+else then{
+display("Invalid.")
+}
+
+while x>12 do{
+return(x)
+}
+
+hello 12 +
+
+foreach fruit in fruits{
+display(fruit)
+}
