@@ -443,7 +443,7 @@ void compound_stmt()
         }
         getNextToken();
         while (strcmp(token, "}") != 0)
-        {
+        {   line = line +1;
             stmt();
             getNextToken();
         }
@@ -466,7 +466,7 @@ void compound_stmt()
             expect("NEWLINE");
             getNextToken();
             while (strcmp(token, "}") != 0)
-            {
+            {   line = line +1;
                 stmt();
                 getNextToken();
             }
@@ -488,7 +488,7 @@ void compound_stmt()
             }
             getNextToken();
             while (strcmp(token, "}") != 0)
-            {
+            {   line = line +1;
                 stmt();
                 getNextToken();
             }
@@ -543,6 +543,30 @@ void compound_stmt()
         }
         // printf("asdasdasd%sasdasdasdas", token);
     }
+    else if (strcmp(token, "while") == 0){
+        printf("\n-><while_stmt>{");
+        printf("\nwhile");
+        getNextToken();
+        expr();
+        if (strcmp(token, "do") == 0)
+        {
+            printf("\ndo");
+            expect("{");
+            expect("NEWLINE");
+        }
+        getNextToken();
+        while (strcmp(token, "}") != 0)
+        {   line = line +1;
+            stmt();
+            getNextToken();
+        }
+        if (strcmp(token, "}") == 0)
+        {
+            printf("}");
+            getNextToken();
+        }
+    }
+    
 }
 
 
