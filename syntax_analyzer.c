@@ -174,7 +174,20 @@ int simple_stmt(){
         ;
     }
     else if(strcmp(token,"input")==0){
-        ;
+        printf("\n-><input_stmt>");
+        printf("\ninput");
+        expect("(");
+        getNextToken();
+        if(const_wordCharBool()){
+            printf("\n%s",token);
+        }
+        else{
+            error("\nerror: unexpected symbol");
+        }
+        expect(",");
+        expect("IDENTIFIER");
+        expect(")");
+        getNextToken();
     }
     else if(strcmp(token,"list")==0){
         printf("%s ", token);
