@@ -1,12 +1,12 @@
 num num2 = 12 ^ 3 + 12
 word school = "PUP"
-
-num num2 - 12 ^ 3 + 12
 boolean is_true = false 
 
 studentName = "Anne"
 score = 90 + 29 -13
+x = true and false
 
+num num2 - 12 ^ 3 + 12
 studentName > "Anne"
 score = 90 +
 
