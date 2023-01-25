@@ -74,11 +74,11 @@ int main(){
         }
         else{
             stmt();
-            printf("\nLEXEME:%s\n\n", lexeme);
+            printf("\nLEXEME:%s", lexeme);
             lexeme[0] = '\0';
         }
 
-        printf("\nTOKEN:%s", tokenLine);
+        printf("\nTOKEN:%s\n\n", tokenLine);
         tokenLine[0]='\0';
         line = line +1;
 
