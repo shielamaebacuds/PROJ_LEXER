@@ -65,29 +65,42 @@ int main(){
 
     line = 1;
 
+    FILE *syntaxTable = fopen("syntaxTable.txt", "w");
+    if (syntaxTable == NULL)
+    {
+        printf("Error opening syntax table");
+        return 1;
+    }
+
     while(strcmp(token,"EOF")!=0){
         getNextToken();
 
         if(strcmp(token,"SLCOMMENT")==0||strcmp(token,"MLCOMMENT")==0||token[0]=='a'||strcmp(token,"an")==0){
-
             getNextToken();
         }
         else{
             stmt();
+
+            fprintf(syntaxTable,"\n(LINE%d)", line);
+
             printf("\nLEXEME:%s", lexeme);
+            fprintf(syntaxTable, "\nLEXEME:%s",lexeme);
             lexeme[0] = '\0';
+
+            printf("\nTOKEN LINE:%s\n\n", tokenLine);
+            fprintf(syntaxTable, "\nTOKEN LINE:%s\n\n",tokenLine);
+            tokenLine[0]='\0';
+            line = line +1;
         }
 
-        printf("\nTOKEN:%s\n\n", tokenLine);
-        tokenLine[0]='\0';
-        line = line +1;
+
 
     }
-    
+    printf("Syntax Table was successfully generated!\n");
     fclose(symbolTable);
+    fclose(syntaxTable);
 
     return 0;
-}
 
 
 void getNextToken(){
