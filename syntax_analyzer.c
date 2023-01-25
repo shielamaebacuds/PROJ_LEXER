@@ -162,7 +162,10 @@ int simple_stmt(){
         expr();
     }
     else if(strcmp(token,"IDENTIFIER")==0){
-        ;
+        printf("\n-><assignment_stmt>");
+        printf("\n->IDENTIFIER");
+        expect("=");
+        expr();
     }
     else if(strcmp(token,"display")==0){
         ;
@@ -200,19 +203,29 @@ int simple_stmt(){
             printf("\n%s", token);
         }
         else{
-            error("error: unexpected symbol");
+            error("error: unexpected symbol (missing a NEWLINE)");
+            while(strcmp(token,"NEWLINE")!=0){
+                getNextToken();
+            }
+            printf("\nTOKEN LINE:%s", tokenLine);
+            tokenLine[0]='\0';
+            line = line +1;
             return 0;
         }
     }
-    else if(currentChar[0]!=EOF){
-        return 1;
+    else if(currentChar[0]==EOF){
+        ;
     }
     else{
-        error("error: unexpected symbol (missing a NEWLINE)");
+        error("error: unexpected symbol");
 
-        while(strcmp(token,"NEWLINE")==0 || currentChar[0]!=EOF){
+        while(strcmp(token,"NEWLINE")!=0){
             getNextToken();
         }
+        printf("\nTOKEN LINE:%s", tokenLine);
+        tokenLine[0]='\0';
+        line = line +1;
+        return 0;
     }
 
     printf("\nTOKEN LINE:%s", tokenLine);
