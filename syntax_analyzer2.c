@@ -173,7 +173,7 @@ void error(char message[]){
 void stmt(){
     printf("\n-><stmt>");
     if(strcmp(token,"if")==0 || strcmp(token,"else")==0 || strcmp(token,"foreach")==0 || strcmp(token,"match") ==0|| strcmp(token,"while")==0){
-        ;
+   
         compound_stmt();
     }
     else{
@@ -430,6 +430,7 @@ return 1;
 
 void compound_stmt()
 {
+    printf("\n-><compound_stmt>");
     printf("\n(LINE%d)", line);
     printf("\n-><compound_stmt>");
 
