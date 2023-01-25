@@ -1439,7 +1439,7 @@ bool isOperator(FILE *f, FILE *symbolTable, char *c)
         }
         else
         {
-            fprintf(symbolTable, "INVALID~%s\n", lexeme);
+            fprintf(symbolTable, "!~%s\n", lexeme);
             *c = cur_char;
         }
 
