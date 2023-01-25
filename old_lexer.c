@@ -15,7 +15,7 @@ char create_CHARACTER_Lexeme(FILE *f, FILE *symbolTable);               // char 
 bool isOperator(FILE *f, FILE *symbolTable, char *c);                   // for operators
 bool isDelimiterBracket(FILE *f, FILE *symbolTable, char *c);           // for delimiters and brackets
 
-int main()
+int lexer()
 {
     FILE *sourceCode;
     char filename[30];
@@ -129,6 +129,11 @@ void driverFunction(FILE *f, FILE *symbolTable)
             fprintf(symbolTable, "INVALID~%c\n", currentCharacter);
             currentCharacter = getNextCharacter(f);
         }
+    }
+    
+    if (currentCharacter == EOF)
+    {
+        fprintf(symbolTable, "EOF~EOF");
     }
 }
 

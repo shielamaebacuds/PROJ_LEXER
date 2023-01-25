@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include "old_lexer.c"
 
 
 char currentChar[2];
@@ -40,6 +41,7 @@ void compound_stmt();
 int simple_stmt();
 
 int main(){
+    lexer();
     symbolTable = fopen("symbol_table.txt", "r");
 
     //open file
@@ -161,18 +163,107 @@ int simple_stmt(){
         printf("\n<resv_word>");
         expect("IDENTIFIER");
         expect("=");
+        getNextToken();
         expr();
     }
     else if(strcmp(token,"IDENTIFIER")==0){
         printf("\n-><assignment_stmt>");
         printf("\n->IDENTIFIER");
         expect("=");
+        getNextToken();
         expr();
     }
     else if(strcmp(token,"display")==0){
+            printf("\n-><display_stmt>");
+        printf("\ndisplay");
+        expect("(");
+        
+        getNextToken();
+    
+        if(strcmp(token,"CONSTWORD")==0 || strcmp(token,"IDENTIFIER")==0)
+        {
+            while((strcmp(token,"CONSTWORD")==0 || strcmp(token,"IDENTIFIER")==0))
+            {
+                printf("\n%s",token);
+                getNextToken();
+                if (strcmp(token,",")==0)
+                {   
+                    printf("\n%s",token);
+                    getNextToken();
+                }
+                
+                else if(strcmp(token,")")==0)
+                {
+                    printf("\n%s",token);
+                    getNextToken();
+                    break;
+                }
+
+                else
+                {   
+                    error("unexpected symbol");
+                    // getNextToken();
+                    break;
+                }
+
+            }
+
+            if(strcmp(token,"NEWLINE")!=0)
+            {
+                error("unexpected symbol"); 
+            }
+        } 
+
+        else
+        {
+            expr();
+        }  
         ;
     }
     else if(strcmp(token,"return")==0){
+        printf("\n-><return_stmt>");
+        printf("\nreturn");
+        expect("(");
+
+        getNextToken();
+        if(strcmp(token,"CONSTWORD")==0 || strcmp(token,"IDENTIFIER")==0)
+        {
+            while((strcmp(token,"CONSTWORD")==0 || strcmp(token,"IDENTIFIER")==0))
+            {
+                printf("\n%s",token);
+                getNextToken();
+                if (strcmp(token,",")==0)
+                {   
+                    printf("\n%s",token);
+                    getNextToken();
+                }
+                
+                else if(strcmp(token,")")==0)
+                {
+                    printf("\n%s",token);
+                    getNextToken();
+                    break;
+                }
+
+                else
+                {   
+                    error("unexpected symbol");
+                    // getNextToken();
+                    break;
+                }
+
+            }
+
+            if(strcmp(token,"NEWLINE")!=0)
+            {
+                error("unexpected symbol"); 
+            }
+        } 
+
+        else
+        {
+            expr();
+        }  
         ;
     }
     else if(strcmp(token,"input")==0){
@@ -387,7 +478,7 @@ bool const_numDec(){
 
 
 void expr(){
-    getNextToken();
+    // getNextToken();
     printf("\n<expr>{");
 
     while(const_numDec()|| token[0]=='(' || token[0]==')' || strcmp(token, "IDENTIFIER") == 0 || const_wordCharBool() || boolean_operator() || logical_operator() || arithmetic_operator()){
