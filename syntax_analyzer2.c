@@ -5,15 +5,14 @@
 #include "lexer.c"
 
 
-char currentChar[2];
-FILE *symbolTable;
-int position;
-char *lexeme;
-char space[2];
-char *token;
-char *errorLine;
-char *tokenLine;
-FILE *syntaxTable;
+char currentChar[2];    //for current character
+FILE *symbolTable;      //for symbolTable.txt
+char *lexeme;           //lexeme line
+char space[2];          //whitespace
+char *token;            //current token
+char *errorLine;        //error line
+char *tokenLine;        //token line
+FILE *syntaxTable;      //for syntaxTable.txt
 
 void getNextToken();               // getting the next token in the symbol table
 void stmt();                       // check whether the stmt is simple or compound
@@ -21,29 +20,32 @@ void expect(char expectedToken[]); // chek if the next token is the same as the 
 void declaration_stmt();           // check if declaration stmt
 void error(char message[]);        // display error message
 bool resv_word();                  // check if resv_word
-bool const_wordCharBool();         // check if the toke is a CONSTWORD | CONSTCHARACTER | false | true
-int line;
+bool const_wordCharBool();         // check if the token is a CONSTWORD | CONSTCHARACTER | false | true
+int line;                          //current line in the program
 
-void lowest_logic_expr();
-void lower_logic_expr();
-bool boolean_operator();
-bool logical_operator();
-bool arithmetic_operator();
-bool const_numDec();
-void low_logic_expr();
-int factor();
-void expr_factor();
-void expr();
-void arithmetic_expr();
-void arithmetic_factor();
-void higher_term();
-void term();
-void printToTable();
-void compound_stmt();
-int simple_stmt();
-void elseif_stmt();
-void else_stmt();
-int case_stmt();
+void printToTable();             //print details to syntaxTable.txt
+void compound_stmt();            //check if compound statement
+int simple_stmt();               //check if simple statement
+void elseif_stmt();              //check if else if stmt
+void else_stmt();                //check if else stmt
+int case_stmt();                 //check if case stmt
+
+bool boolean_operator();         //check if token is a boolean operator
+bool logical_operator();         //check if token is a logical operator
+bool arithmetic_operator();      //check if token is a arithmetic operator
+bool const_numDec();             //check if token is a number or decimal
+
+void lowest_logic_expr();        //"or" expr
+void lower_logic_expr();         //"and" expr
+void low_logic_expr();           //"not" expr
+int factor();                    //const_numDec and identifier
+void expr_factor();              //const_wordCharBool, (expr)
+void expr();                     //boolean expr
+void arithmetic_expr();          //+ - expr
+void arithmetic_factor();        //factor, (arithmetic_factor)
+void higher_term();              //* / @ % expr
+void term();                     //^ expr
+
 
 int main(){
     lexer();
@@ -1385,4 +1387,7 @@ int factor(){
     }
 
 }
+
+
+
 
