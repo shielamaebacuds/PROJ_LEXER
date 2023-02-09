@@ -2,7 +2,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include "old_lexer.c"
+#include "lexer.c"
+
 
 char currentChar[2];
 FILE *symbolTable;
@@ -10,6 +11,7 @@ int position;
 char *lexeme;
 char space[2];
 char *token;
+char *errorLine;
 char *tokenLine;
 FILE *syntaxTable;
 
@@ -36,35 +38,38 @@ void arithmetic_expr();
 void arithmetic_factor();
 void higher_term();
 void term();
-
+void printToTable();
 void compound_stmt();
 int simple_stmt();
+void elseif_stmt();
+void else_stmt();
 int case_stmt();
 
-int main()
-{
+int main(){
     lexer();
     symbolTable = fopen("symbol_table.txt", "r");
 
-    // open file
-    if (symbolTable == NULL)
-    {
+    //open file
+    if (symbolTable == NULL){
         printf("Error opening symbol table");
         return 1;
     }
 
-    // iniatlization of arrays
-
+    //iniatlization of arrays
     lexeme = NULL;
-    lexeme = (char *)malloc(sizeof(char) + 1);
+    lexeme = (char*)malloc(sizeof(char)+1);
     lexeme[0] = '\0';
 
     token = NULL;
-    token = (char *)malloc(sizeof(char) + 1);
+    token = (char*)malloc(sizeof(char)+1);
 
     tokenLine = NULL;
-    tokenLine = (char *)malloc(sizeof(char) + 1);
+    tokenLine = (char*)malloc(sizeof(char)+1);
     tokenLine[0] = '\0';
+
+    errorLine = NULL;
+    errorLine = (char*)malloc(sizeof(char)+1);
+    errorLine[0] = '\0';
 
     line = 1;
 
@@ -75,28 +80,26 @@ int main()
         return 1;
     }
 
-    while (strcmp(token, "EOF") != 0)
-    {
+
+    while(strcmp(token,"EOF")!=0){
         getNextToken();
 
-        if (strcmp(token, "SLCOMMENT") == 0 || strcmp(token, "MLCOMMENT") == 0 || token[0] == 'a' || strcmp(token, "an") == 0)
-        {
-            getNextToken();
-        }
-        else
-        {
+
             stmt();
-            fprintf(syntaxTable, "\n(LINE%d)", line);
-            fprintf(syntaxTable, "\nLEXEME:%s", lexeme);
-            fprintf(syntaxTable, "\nTOKEN LINE:%s\n\n", tokenLine);
+
+            printToTable();
+
             printf("\nLEXEME:%s", lexeme);
             lexeme[0] = '\0';
 
             printf("\nTOKEN LINE:%s\n\n", tokenLine);
+            tokenLine[0]='\0';
 
-            tokenLine[0] = '\0';
-            line = line + 1;
-        }
+            errorLine[0]='\0';
+            line = line +1;
+
+
+
     }
     printf("Syntax Table was successfully generated!\n");
     fclose(symbolTable);
@@ -105,91 +108,156 @@ int main()
     return 0;
 }
 
-void getNextToken()
-{
 
-    token[0] = '\0';
+void getNextToken(){
 
-    currentChar[0] = fgetc(symbolTable);
-    currentChar[1] = '\0';
+        token[0] = '\0';
 
-    while (currentChar[0] != '~' && currentChar[0] != EOF)
-    {
+        currentChar[0]=fgetc(symbolTable);
+        currentChar[1]='\0';
 
-        token = (char *)realloc(token, (strlen(token) + strlen(currentChar)) * sizeof(char) + 1);
-        strcat(token, currentChar);
+        while(currentChar[0]!='~' && currentChar[0]!=EOF){
 
-        currentChar[0] = fgetc(symbolTable);
-        currentChar[1] = '\0';
+            token = (char *)realloc(token, (strlen(token) + strlen(currentChar)) * sizeof(char) + 1);
+            strcat(token,currentChar);
+
+            currentChar[0]=fgetc(symbolTable);
+            currentChar[1]='\0';
+        }
+
+        currentChar[0]=fgetc(symbolTable);
+        currentChar[1]='\0';
+
+        if(strcmp(token,"SLCOMMENT")==0||strcmp(token,"MLCOMMENT")==0|| strcmp(token,"an")==0 ||strcmp(token,"an")==0){ //ignore comments and noise words
+            getNextToken();
+        }
+        else{
+
+            while(currentChar[0]!='\n' && currentChar[0]!=EOF){
+
+                lexeme = (char *)realloc(lexeme, (strlen(lexeme) + strlen(currentChar)) * sizeof(char) + 1);
+                strcat(lexeme,currentChar);
+
+                currentChar[0]=fgetc(symbolTable);
+                currentChar[1]='\0';
+            }
+
+
+            space[0] = ' ';
+            space[1] = '\0';
+
+            lexeme = (char *)realloc(lexeme, (strlen(lexeme) + strlen(space)) * sizeof(char) + 1);
+            strcat(lexeme,space);
+
+            tokenLine = (char *)realloc(tokenLine, (strlen(tokenLine) + strlen(token)) * sizeof(char) + 1);
+            strcat(tokenLine,token);
+
+            tokenLine = (char *)realloc(tokenLine, (strlen(tokenLine) + strlen(space)) * sizeof(char) + 1);
+            strcat(tokenLine,space);
+        }
+
+
+
+
+
+
+}
+
+
+void expect(char expectedToken[]){
+    getNextToken();
+
+    char errorMessage [50] = "error:missing ";
+
+    strcat(errorMessage,expectedToken);
+
+    if(strcmp(token,expectedToken) == 0){
+        printf("\n%s", token);
+    }
+    else{
+        error(errorMessage);
     }
 
-    currentChar[0] = fgetc(symbolTable);
-    currentChar[1] = '\0';
 
-    while (currentChar[0] != '\n' && currentChar[0] != EOF)
-    {
+}
 
-        lexeme = (char *)realloc(lexeme, (strlen(lexeme) + strlen(currentChar)) * sizeof(char) + 1);
-        strcat(lexeme, currentChar);
 
-        currentChar[0] = fgetc(symbolTable);
-        currentChar[1] = '\0';
-    }
+void error(char message[]){
+    printf("\n%s", message);
 
     space[0] = ' ';
     space[1] = '\0';
 
-    lexeme = (char *)realloc(lexeme, (strlen(lexeme) + strlen(space)) * sizeof(char) + 1);
-    strcat(lexeme, space);
+    errorLine = (char *)realloc(errorLine, (strlen(errorLine) + strlen(space)) * sizeof(char) + 1);
+    strcat(errorLine,space);
 
-    tokenLine = (char *)realloc(tokenLine, (strlen(tokenLine) + strlen(token)) * sizeof(char) + 1);
-    strcat(tokenLine, token);
+    errorLine = (char *)realloc(errorLine, (strlen(errorLine) + strlen(message)) * sizeof(char) + 1);
+    strcat(errorLine,message);
 
-    tokenLine = (char *)realloc(tokenLine, (strlen(tokenLine) + strlen(space)) * sizeof(char) + 1);
-    strcat(tokenLine, space);
 }
 
-void expect(char expectedToken[])
-{
-    getNextToken();
+void expr_error(){
+    char message[24] = "error:unexpected symbol";
 
-    if (strcmp(token, expectedToken) == 0)
-    {
-        printf("\n%s", token);
-    }
-    else
-    {
-        error("error: unexpected symbol");
-    }
+    space[0] = ' ';
+    space[1] = '\0';
+
+    errorLine = (char *)realloc(errorLine, (strlen(errorLine) + strlen(space)) * sizeof(char) + 1);
+    strcat(errorLine,space);
+
+    errorLine = (char *)realloc(errorLine, (strlen(errorLine) + strlen(message)) * sizeof(char) + 1);
+    strcat(errorLine,message);
+
 }
 
-void error(char message[])
-{
-    printf("\n%s", message);
-}
 
-void stmt()
-{
+void stmt(){
     printf("\n-><stmt>");
-    if (strcmp(token, "if") == 0 || strcmp(token, "else") == 0 || strcmp(token, "foreach") == 0 || strcmp(token, "match") == 0 || strcmp(token, "while") == 0)
-    {
 
+
+    if(strcmp(token,"if")==0 || strcmp(token,"foreach")==0 || strcmp(token,"match") ==0|| strcmp(token,"while")==0){
         compound_stmt();
     }
-    else
-    {
+    else if(strcmp(token,"else")==0){
+        error("error: missing if statement");
 
+        printf("\n-><compound_stmt>");
+
+        fprintf(syntaxTable,"\n(LINE%d) to", line);
+
+        getNextToken();
+
+        if(strcmp(token, "if") == 0){ //elseif_stmt
+            elseif_stmt();
+            return;
+        }
+        else_stmt();
+
+    }
+    else{
         simple_stmt();
     }
 }
 
-int simple_stmt()
-{
+void printToTable(){
+    fprintf(syntaxTable,"\n(LINE%d)", line);
+    fprintf(syntaxTable, "\nLEXEME:%s",lexeme);
+    fprintf(syntaxTable, "\nTOKEN LINE:%s",tokenLine);
+    fprintf(syntaxTable, "\n");
+    fprintf(syntaxTable, errorLine);
+    fprintf(syntaxTable, "\n");
+
+
+}
+
+
+
+int simple_stmt(){
     printf("\n(LINE%d)", line);
 
     printf("\n-><simple_stmt>");
-    if (resv_word())
-    {
+
+    if(resv_word()){ //declarative_stmt
         printf("\n-><declarative_stmt>");
         printf("\n<resv_word>");
         expect("IDENTIFIER");
@@ -197,37 +265,34 @@ int simple_stmt()
         getNextToken();
         expr();
     }
-    else if (strcmp(token, "IDENTIFIER") == 0)
-    {
+    else if(strcmp(token,"IDENTIFIER")==0){ //assignment_stmt
         printf("\n-><assignment_stmt>");
         printf("\n->IDENTIFIER");
         expect("=");
         getNextToken();
         expr();
     }
-    else if (strcmp(token, "display") == 0)
-    {
+    else if(strcmp(token,"display")==0){ //display_stmt
         printf("\n-><display_stmt>");
         printf("\ndisplay");
         expect("(");
 
         getNextToken();
 
-        if (strcmp(token, "CONSTWORD") == 0 || strcmp(token, "IDENTIFIER") == 0)
+        if(strcmp(token,"CONSTWORD")==0 || strcmp(token,"IDENTIFIER")==0)
         {
-            while ((strcmp(token, "CONSTWORD") == 0 || strcmp(token, "IDENTIFIER") == 0))
+            while((strcmp(token,"CONSTWORD")==0 || strcmp(token,"IDENTIFIER")==0))
             {
-                printf("\n%s", token);
+                printf("\n%s",token);
                 getNextToken();
-                if (strcmp(token, ",") == 0)
+                if (strcmp(token,",")==0)
                 {
-                    printf("\n%s", token);
+                    printf("\n%s",token);
                     getNextToken();
                 }
-
-                else if (strcmp(token, ")") == 0)
+                else if(strcmp(token,")")==0)
                 {
-                    printf("\n%s", token);
+                    printf("\n%s",token);
                     getNextToken();
                     break;
                 }
@@ -235,12 +300,12 @@ int simple_stmt()
                 else
                 {
                     error("unexpected symbol");
-                    // getNextToken();
                     break;
                 }
+
             }
 
-            if (strcmp(token, "NEWLINE") != 0)
+            if(strcmp(token,"NEWLINE")!=0)
             {
                 error("unexpected symbol");
             }
@@ -249,30 +314,30 @@ int simple_stmt()
         else
         {
             expr();
-        };
+        }
+        ;
     }
-    else if (strcmp(token, "return") == 0)
-    {
+    else if(strcmp(token,"return")==0){ //return_stmt
         printf("\n-><return_stmt>");
         printf("\nreturn");
         expect("(");
 
         getNextToken();
-        if (strcmp(token, "CONSTWORD") == 0 || strcmp(token, "IDENTIFIER") == 0)
+        if(strcmp(token,"CONSTWORD")==0 || strcmp(token,"IDENTIFIER")==0)
         {
-            while ((strcmp(token, "CONSTWORD") == 0 || strcmp(token, "IDENTIFIER") == 0))
+            while((strcmp(token,"CONSTWORD")==0 || strcmp(token,"IDENTIFIER")==0))
             {
-                printf("\n%s", token);
+                printf("\n%s",token);
                 getNextToken();
-                if (strcmp(token, ",") == 0)
+                if (strcmp(token,",")==0)
                 {
-                    printf("\n%s", token);
+                    printf("\n%s",token);
                     getNextToken();
                 }
 
-                else if (strcmp(token, ")") == 0)
+                else if(strcmp(token,")")==0)
                 {
-                    printf("\n%s", token);
+                    printf("\n%s",token);
                     getNextToken();
                     break;
                 }
@@ -280,12 +345,12 @@ int simple_stmt()
                 else
                 {
                     error("unexpected symbol");
-                    // getNextToken();
                     break;
                 }
+
             }
 
-            if (strcmp(token, "NEWLINE") != 0)
+            if(strcmp(token,"NEWLINE")!=0)
             {
                 error("unexpected symbol");
             }
@@ -294,30 +359,30 @@ int simple_stmt()
         else
         {
             expr();
-        };
+        }
+        ;
     }
-    else if (strcmp(token, "input") == 0)
-    {
+    else if(strcmp(token,"input")==0){ //input_stmt
         printf("\n-><input_stmt>");
         printf("\ninput");
         expect("(");
 
         getNextToken();
-        if (strcmp(token, "CONSTWORD") == 0)
+        if(strcmp(token,"CONSTWORD")==0)
         {
-            while ((strcmp(token, "CONSTWORD") == 0 || strcmp(token, "IDENTIFIER") == 0))
+            while((strcmp(token,"CONSTWORD")==0 || strcmp(token,"IDENTIFIER")==0))
             {
-                printf("\n%s", token);
+                printf("\n%s",token);
                 getNextToken();
-                if (strcmp(token, ",") == 0)
+                if (strcmp(token,",")==0)
                 {
-                    printf("\n%s", token);
+                    printf("\n%s",token);
                     getNextToken();
                 }
 
-                else if (strcmp(token, ")") == 0)
+                else if(strcmp(token,")")==0)
                 {
-                    printf("\n%s", token);
+                    printf("\n%s",token);
                     getNextToken();
                     break;
                 }
@@ -325,196 +390,218 @@ int simple_stmt()
                 else
                 {
                     error("unexpected symbol");
-                    // getNextToken();
                     break;
                 }
+
             }
 
-            if (strcmp(token, "NEWLINE") != 0)
+            if(strcmp(token,"NEWLINE")!=0)
             {
                 error("unexpected symbol");
             }
         }
     }
-    else if (strcmp(token, "list") == 0)
-    {
-        printf("\n-><list_stmt>");
+    else if(strcmp(token,"list")==0){ //list_stmt
+      printf("\n-><list_stmt>");
         printf("\nlist");
         expect("IDENTIFIER");
         expect("=");
         expect("[");
 
         getNextToken();
-        if (const_numDec() || const_wordCharBool() || strcmp(token, "IDENTIFIER") == 0)
+        if(const_numDec() || const_wordCharBool() || strcmp(token,"IDENTIFIER")==0)
         {
-            while (const_numDec() || const_wordCharBool() || strcmp(token, "IDENTIFIER") == 0)
+            while(const_numDec() || const_wordCharBool() || strcmp(token,"IDENTIFIER")==0)
             {
-                printf("\n%s", token);
+                printf("\n%s",token);
                 getNextToken();
-                if (strcmp(token, ",") == 0)
+                if (strcmp(token,",")==0)
                 {
-                    printf("\n%s", token);
+                    printf("\n%s",token);
                     getNextToken();
                 }
 
-                else if (strcmp(token, "]") == 0)
+                else if(strcmp(token,"]")==0)
                 {
-                    printf("\n%s", token);
+                    printf("\n%s",token);
                     getNextToken();
                     break;
                 }
 
                 else
                 {
-                    error("unexpected symbol");
-                    // getNextToken();
+                    error("error: unexpected symbol");
                     break;
                 }
+
             }
 
-            if (strcmp(token, "NEWLINE") != 0)
+            if(strcmp(token,"NEWLINE")!=0)
             {
-                error("unexpected symbol");
+                error("error: unexpected symbol");
             }
         }
-    }
-    else if (strcmp(token, "EOF") == 0)
-    {
+
+
+    }else if(strcmp(token,"EOF")==0){
         return 0;
+
     }
-    else
-    {
-        error("unexpected symbol");
+    else{
+        error("error: unexpected symbol");
     }
 
-    // for newline and optional semicolon
-    if (strcmp(token, "NEWLINE") == 0)
-    {
+
+
+    //check for newline and optional semicolon
+    if(strcmp(token,"NEWLINE")==0){ //if NEWLINE exists
         printf("\n%s", token);
     }
-    else if (token[0] == ';')
-    {
+    else if(token[0]==';'){ //if there's a semicolon
         printf("\n%s", token);
         getNextToken();
 
-        if (strcmp(token, "NEWLINE") == 0)
-        {
+        if(strcmp(token,"NEWLINE")==0){ //if NEWLINE exists after semicolon
             printf("\n%s", token);
         }
-        else
-        {
-            error("error: unexpected symbol (missing a NEWLINE)");
-            while (strcmp(token, "NEWLINE") != 0)
-            {
+        else{
+            error("error: missing NEWLINE"); //missing NEWLINE
+
+            //get the rest of the line until there's a NEWLINE
+            while(strcmp(token,"NEWLINE")!=0){
                 getNextToken();
             }
             printf("\nTOKEN LINE:%s", tokenLine);
-            tokenLine[0] = '\0';
-            line = line + 1;
+            tokenLine[0]='\0';
+            line = line +1;
             return 0;
         }
     }
-    else if (strcmp(token, "EOF") == 0)
-    {
+    else if(strcmp(token,"EOF")==0){ // if end of the file
         return 1;
     }
-    else
-    {
-        error("error: unexpected symbol");
+    else{
+        error("error: missing NEWLINE"); //missing NEWLINE
 
-        while (strcmp(token, "NEWLINE") != 0)
-        {
+        //get the rest of the line until there's a NEWLINE
+        while(strcmp(token,"NEWLINE")!=0){
             getNextToken();
         }
         printf("\nTOKEN LINE:%s", tokenLine);
-        tokenLine[0] = '\0';
-        line = line + 1;
+        tokenLine[0]='\0';
+        line = line +1;
         return 0;
     }
 
-    return 1;
+return 1;
+
 }
 
 void compound_stmt()
 {
-    printf("\n-><compound_stmt>");
     printf("\n(LINE%d)", line);
     printf("\n-><compound_stmt>");
 
-    if (strcmp(token, "if") == 0)
+    fprintf(syntaxTable,"\n(LINE%d) to", line);
+
+    if (strcmp(token, "if") == 0) //if_stmt
     {
         printf("\n-><if_stmt>{");
         printf("\nif");
         getNextToken();
         expr();
-        if (strcmp(token, "then") == 0)
-        {
+
+        if (strcmp(token, "then") == 0){
             printf("\nthen");
-            expect("{");
-            expect("NEWLINE");
+            getNextToken();
+
+            if (token[0]=='{'){
+                printf("\n{");
+                getNextToken();
+
+                if (strcmp(token, "NEWLINE") == 0){
+                    printf("\nNEWLINE");
+                }
+                else{
+                    error("error: missing NEWLINE");
+                }
+
+             }
+             else{
+                error("error: missing {");
+
+                if (strcmp(token, "NEWLINE") == 0){
+                    printf("\nNEWLINE");
+                }
+                else{
+                    error("error: missing NEWLINE");
+                    line = line - 1;
+                }
+             }
+        }
+        else{
+            error("error: missing then");
+
+             if (token[0]=='{'){
+                printf("\n{");
+                getNextToken();
+
+                if (strcmp(token, "NEWLINE") == 0){
+                    printf("\nNEWLINE");
+                }
+                else{
+                    error("error: missing NEWLINE");
+                }
+             }
+             else{
+                error("error: missing {");
+
+                if (strcmp(token, "NEWLINE") == 0){
+                    printf("\nNEWLINE");
+                }
+                else{
+                    error("error: missing NEWLINE");
+                    line = line - 1;
+                }
+             }
+
         }
         getNextToken();
+
         while (strcmp(token, "}") != 0)
-        {
-            line = line + 1;
+        {   line = line +1;
             stmt();
             getNextToken();
         }
-        if (strcmp(token, "}") == 0)
-        {
-            printf("}");
+        if (strcmp(token, "}") == 0){
+            printf("\n}");
             getNextToken();
-        }
-    }
-    else if (strcmp(token, "else") == 0)
-    {
-        printf("\n-><else_stmt>{");
-        printf("\nelse");
 
-        getNextToken();
-        if (strcmp(token, "then") == 0)
-        {
-            expect("{");
-            expect("NEWLINE");
-            getNextToken();
-            while (strcmp(token, "}") != 0)
-            {
+
+            //ELSE IF & ELSE
+            if(strcmp(token, "NEWLINE") == 0){
+                printf("\nNEWLINE");
+                line = line +1;
+            }
+            else if(strcmp(token, "EOF") == 0){
+                printf("\nEOF");
                 line = line + 1;
-                stmt();
-                getNextToken();
             }
-            if (strcmp(token, "}") == 0)
-            {
-                printf("}");
+            else if(strcmp(token, "else") == 0){
                 getNextToken();
+                line = line +1;
+                if(strcmp(token, "if") == 0){ //elseif_stmt
+                    elseif_stmt();
+                    return;
+                }
+                else_stmt();
             }
-        }
-        else if (strcmp(token, "if") == 0)
-        {
-            getNextToken();
-            expr();
-            if (strcmp(token, "then") == 0)
-            {
-                printf("\nthen");
-                expect("{");
-                expect("NEWLINE");
-            }
-            getNextToken();
-            while (strcmp(token, "}") != 0)
-            {
-                line = line + 1;
-                stmt();
-                getNextToken();
-            }
-            if (strcmp(token, "}") == 0)
-            {
-                printf("}");
-                getNextToken();
+            else{
+                error("error: unexpected symbol");
             }
         }
     }
-    else if (strcmp(token, "while") == 0)
-    {
+    else if (strcmp(token, "while") == 0){ //while_stmt
         printf("\n-><while_stmt>{");
         printf("\nwhile");
         getNextToken();
@@ -527,19 +614,17 @@ void compound_stmt()
         }
         getNextToken();
         while (strcmp(token, "}") != 0)
-        {
-            line = line + 1;
+        {   line = line +1;
             stmt();
             getNextToken();
         }
         if (strcmp(token, "}") == 0)
         {
-            printf("}");
+            printf("\n}");
             getNextToken();
         }
     }
-    else if (strcmp(token, "foreach") == 0)
-    {
+    else if (strcmp(token, "foreach") == 0){ //foreach_stmt
         printf("\n-><foreach_stmt>{");
         printf("\nforeach");
         expect("IDENTIFIER");
@@ -554,48 +639,170 @@ void compound_stmt()
         }
         getNextToken();
         while (strcmp(token, "}") != 0)
-        {
-            line = line + 1;
+        {   line = line +1;
             stmt();
             getNextToken();
         }
         if (strcmp(token, "}") == 0)
         {
-            printf("}");
+            printf("\n}");
             getNextToken();
         }
     }
-    else if (strcmp(token, "match") == 0)
-    {
+    else if (strcmp(token, "match") == 0){
         printf("\n-><match_stmt>{");
         printf("\nmatch");
         expect("IDENTIFIER");
         expect(":");
         expect("{");
         expect("NEWLINE");
-        line = line + 1;
         getNextToken();
 
-        while (strcmp(token, "}") != 0)
-        {
-            // line = line + 1;
+        while (strcmp(token, "}") != 0){
+            line = line + 1;
             case_stmt();
             getNextToken();
         }
-        printf("\n}");
-        getNextToken();
+        if (strcmp(token, "}") == 0)
+        {
+            printf("\n}");
+            getNextToken();
+        }
     }
+
+
+
+
 }
 
-int case_stmt()
-{
-    if (strcmp(token, "case") == 0)
-    {
+
+
+void elseif_stmt(){
+
+            printf("\n(LINE %d)", line);
+            printf("\n-><elseif_stmt>");
+            printf("\nelse");
+            printf("\nif");
+            getNextToken();
+            expr();
+
+            if (strcmp(token, "then") == 0){
+                printf("\nthen");
+            }
+            else{
+                error("error: missing then");
+            }
+            expect("{");
+            expect("NEWLINE");
+
+            getNextToken();
+
+            while (token[0]!='}'){
+                line = line +1;
+                stmt();
+                getNextToken();
+
+            }
+
+            if (token[0]=='}'){
+                printf("}");
+            }
+            else{
+                error("error: missing }");
+            }
+
+            getNextToken();
+
+            if(strcmp(token, "else") == 0){
+                getNextToken();
+                line = line +1;
+                if(strcmp(token, "if") == 0){
+                    elseif_stmt();
+                }
+                else if(strcmp(token, "then") == 0){ //else_stmt
+                    else_stmt();
+                }
+            }
+            else if(strcmp(token, "NEWLINE") == 0){
+                printf("\nNEWLINE");
+                line = line +1;
+            }
+            else if(strcmp(token, "EOF") == 0){
+                    printf("\nEOF");
+                    line = line + 1;
+            }
+            else{
+                error("error: unexpected symbol");
+            }
+
+}
+
+
+void else_stmt(){
+
+        printf("\n(LINE %d)", line);
+        printf("\n-><elseif_stmt>");
+        printf("\nelse");
+
+            if (strcmp(token, "then") == 0){
+                printf("\nthen");
+            }
+            else{
+                error("error: missing then");
+            }
+            expect("{");
+            expect("NEWLINE");
+            getNextToken();
+
+            while (token[0]!='}'){
+                line = line +1;
+                stmt();
+                getNextToken();
+            }
+
+            if (token[0]=='}'){
+                printf("}");
+
+                getNextToken();
+                if (strcmp(token, "NEWLINE") == 0){
+                    printf("\nNEWLINE");
+                    line = line +1;
+                }
+                else if(strcmp(token, "EOF") == 0){
+                    printf("\nEOF");
+                    line = line + 1;
+                }
+                else{
+                    error("error: missing NEWLINE");
+                }
+            }
+            else{
+                error("error: missing }");
+
+                if (strcmp(token, "NEWLINE") == 0){
+                    printf("\nNEWLINE");
+                    line = line +1;
+                }
+                else if(strcmp(token, "EOF") == 0){
+                    printf("\nEOF");
+                    line = line + 1;
+                }
+                else{
+                    error("error: missing NEWLINE");
+                }
+
+            }
+
+
+}
+
+int case_stmt(){
+    if (strcmp(token, "case") == 0){
         printf("\ncase");
         getNextToken();
     }
-    if (strcmp(token, "!") == 0)
-    {
+
+    if (strcmp(token, "!") == 0){
         printf("\n!");
         expect(":");
         expect("{");
@@ -604,17 +811,14 @@ int case_stmt()
         getNextToken();
         stmt();
         expect("end");
-        expect("NEWLINE");
-        line = line + 1;
         expect("}");
         expect("NEWLINE");
         line = line + 1;
     }
-    else
-    {
+    else{
         expr();
-        if (strcmp(token, ":") == 0)
-        {
+
+        if (strcmp(token, ":") == 0){
             printf("\n:");
         }
         expect("{");
@@ -623,137 +827,127 @@ int case_stmt()
         getNextToken();
         stmt();
         expect("end");
-        expect("NEWLINE");
-        line = line + 1;
         expect("}");
         expect("NEWLINE");
         line = line + 1;
     }
 }
 
-bool resv_word()
-{
+bool resv_word(){
 
-    if (strcmp(token, "word") == 0 || strcmp(token, "character") == 0 || strcmp(token, "num") == 0 || strcmp(token, "boolean") == 0 || strcmp(token, "decimal") == 0)
-    {
+    if(strcmp(token,"word")==0 || strcmp(token,"character")==0 || strcmp(token,"num")==0 || strcmp(token,"boolean") ==0|| strcmp(token,"decimal")==0){
         return true;
     }
-    else
-    {
+    else{
 
         return false;
     }
+
+
 }
 
-bool boolean_operator()
-{
+bool boolean_operator(){
 
-    if (strcmp(token, "==") == 0 || token[0] == '>' || token[0] == '<' || strcmp(token, "!=") == 0 || strcmp(token, ">=") == 0 || strcmp(token, "<=") == 0)
-    {
+
+    if(strcmp(token, "==") == 0 || token[0]== '>' || token[0]=='<'|| strcmp(token, "!=") == 0 ||strcmp(token, ">=") == 0 || strcmp(token, "<=") == 0){
         return true;
     }
-    else
-    {
+    else{
         return false;
     }
+
 }
 
-bool logical_operator()
-{
+bool logical_operator(){
 
-    if (strcmp(token, "and") == 0 || strcmp(token, "not") == 0 || strcmp(token, "or") == 0)
-    {
+
+    if(strcmp(token, "and") == 0 || strcmp(token, "not") == 0 ||strcmp(token, "or") == 0){
         return true;
     }
-    else
-    {
+    else{
         return false;
     }
+
 }
 
-bool arithmetic_operator()
-{
+bool arithmetic_operator(){
 
-    if (token[0] == '+' || token[0] == '-' || token[0] == '*' || token[0] == '/' || token[0] == '@' || token[0] == '^')
-    {
+
+    if(token[0]=='+' || token[0]=='-'  || token[0]=='*' || token[0]=='/'  || token[0]=='@' || token[0]=='^' ){
         return true;
     }
-    else
-    {
+    else{
         return false;
     }
+
 }
 
-bool const_wordCharBool()
-{
+bool const_wordCharBool(){
 
-    if (strcmp(token, "CONSTWORD") == 0 || strcmp(token, "CONSTCHARACTER") == 0 || strcmp(token, "true") == 0 || strcmp(token, "false") == 0)
-    {
+    if(strcmp(token,"CONSTWORD")==0 || strcmp(token,"CONSTCHARACTER")==0 || strcmp(token,"true")==0 || strcmp(token,"false")==0){
         return true;
     }
-    else
-    {
+    else{
         return false;
     }
+
 }
 
-bool const_numDec()
-{
+bool const_numDec(){
 
-    if (strcmp(token, "CONSTNUMBER") == 0 || strcmp(token, "CONSTDECIMAL") == 0)
-    {
+    if(strcmp(token,"CONSTNUMBER")==0 || strcmp(token,"CONSTDECIMAL")==0){
         return true;
     }
-    else
-    {
+    else{
         return false;
     }
+
 }
 
-// EXPRESSION!!
 
-void expr()
-{
+
+//EXPRESSION!!
+
+
+
+void expr(){
     // getNextToken();
     printf("\n<expr>{");
 
-    while (const_numDec() || token[0] == '(' || token[0] == ')' || strcmp(token, "IDENTIFIER") == 0 || const_wordCharBool() || boolean_operator() || logical_operator() || arithmetic_operator())
-    {
+    while(const_numDec()|| token[0]=='(' || token[0]==')' || strcmp(token, "IDENTIFIER") == 0 || const_wordCharBool() || boolean_operator() || logical_operator() || arithmetic_operator()){
 
-        printf("\n\t<lowest_logic_expr>{");
-        lowest_logic_expr(); // get the leftmost term
+            printf("\n\t<lowest_logic_expr>{");
+            lowest_logic_expr(); //get the leftmost term
 
-        printf("\n\t\t\t\t\t\t\t\t\t}");
-        printf("\n\t\t\t\t\t\t\t\t}");
-        printf("\n\t\t\t\t\t\t\t}");
-        printf("\n\t\t\t\t\t\t}");
-        printf("\n\t\t\t\t\t}");
-        printf("\n\t\t\t\t}");
-        printf("\n\t\t\t}");
-        printf("\n\t\t}");
-        printf("\n\t}");
 
-        if (const_numDec() || token[0] == '(' || token[0] == ')' || strcmp(token, "IDENTIFIER") == 0 || const_wordCharBool() || boolean_operator() || logical_operator() || arithmetic_operator())
-        {
-            getNextToken();
-        }
-        else
-        {
-            break;
-        }
+
+            printf("\n\t\t\t\t\t\t\t\t\t}");
+            printf("\n\t\t\t\t\t\t\t\t}");
+            printf("\n\t\t\t\t\t\t\t}");
+            printf("\n\t\t\t\t\t\t}");
+            printf("\n\t\t\t\t\t}");
+            printf("\n\t\t\t\t}");
+            printf("\n\t\t\t}");
+            printf("\n\t\t}");
+            printf("\n\t}");
+
+            if(const_numDec()|| token[0]=='(' || token[0]==')' || strcmp(token, "IDENTIFIER") == 0 || const_wordCharBool() || boolean_operator() || logical_operator() || arithmetic_operator()){
+                getNextToken();
+            }else{
+                break;
+            }
+
     }
 
     printf("\n}");
 }
 
-void lowest_logic_expr()
-{
 
-    while (const_numDec() || token[0] == '(' || token[0] == ')' || strcmp(token, "IDENTIFIER") == 0 || const_wordCharBool() || boolean_operator() || logical_operator() || arithmetic_operator())
-    {
+void lowest_logic_expr(){
 
-        if (strcmp(token, "or") == 0)
-        {
+    while(const_numDec()|| token[0]=='(' || token[0]==')' || strcmp(token, "IDENTIFIER") == 0 || const_wordCharBool() || boolean_operator() || logical_operator() || arithmetic_operator()){
+
+        if(strcmp(token, "or") == 0 ){
             printf("\n\t\t\t\t\t\t\t\t\t}");
             printf("\n\t\t\t\t\t\t\t\t}");
             printf("\n\t\t\t\t\t\t\t}");
@@ -768,119 +962,118 @@ void lowest_logic_expr()
 
             getNextToken();
 
-            if (strcmp(token, "IDENTIFIER") == 0 || const_wordCharBool() || const_numDec() || token[0] == '(')
-            { // get next lowest_logic_expr of expr()
+            if(strcmp(token, "IDENTIFIER") == 0 || const_wordCharBool() || const_numDec() || token[0]=='('){ //get next lowest_logic_expr of expr()
 
                 printf("\n\t<lowest_logic_expr>{");
                 lowest_logic_expr();
                 break;
+
             }
-            else
-            { // unexpected symbol eg 12+3>
-                error("\n\tunexpected symbol");
+            else{//unexpected symbol eg 12+3>
+                printf("\n\terror:unexpected symbol");
+                expr_error();
             }
+
         }
-        else
-        {
+        else{
             printf("\n\t\t<lower_logic_expr>{");
-            lower_logic_expr(); // get leftmost lower_logic_expr of lowest_logic_expr()
+            lower_logic_expr(); //get leftmost lower_logic_expr of lowest_logic_expr()
             break;
         }
 
         getNextToken();
+
     }
+
+
 }
 
-void lower_logic_expr()
-{
 
-    while (const_numDec() || token[0] == '(' || token[0] == ')' || strcmp(token, "IDENTIFIER") == 0 || const_wordCharBool() || boolean_operator() || logical_operator() || arithmetic_operator())
-    {
-        if (strcmp(token, "and") == 0)
-        {
-            printf("\n\t\t\t\t\t\t\t\t\t}");
-            printf("\n\t\t\t\t\t\t\t\t}");
-            printf("\n\t\t\t\t\t\t\t}");
-            printf("\n\t\t\t\t\t\t}");
-            printf("\n\t\t\t\t\t}");
-            printf("\n\t\t\t\t}");
-            printf("\n\t\t\t}");
-            printf("\n\t\t}");
-            printf("\n\n\t\t%s\n", token);
-            getNextToken();
+void lower_logic_expr(){
 
-            if (strcmp(token, "IDENTIFIER") == 0 || const_wordCharBool() || const_numDec() || token[0] == '(' || token[0] == '-')
-            { // get next lower_logic_expr of lowest_logic_expr()
+    while(const_numDec()|| token[0]=='(' || token[0]==')' || strcmp(token, "IDENTIFIER") == 0 || const_wordCharBool() || boolean_operator() || logical_operator() || arithmetic_operator()){
+        if(strcmp(token, "and") == 0){
+                printf("\n\t\t\t\t\t\t\t\t\t}");
+                printf("\n\t\t\t\t\t\t\t\t}");
+                printf("\n\t\t\t\t\t\t\t}");
+                printf("\n\t\t\t\t\t\t}");
+                printf("\n\t\t\t\t\t}");
+                printf("\n\t\t\t\t}");
+                printf("\n\t\t\t}");
+                printf("\n\t\t}");
+                printf("\n\n\t\t%s\n", token);
+                getNextToken();
 
-                printf("\n\t\t<lower_logic_expr>{");
-                lower_logic_expr();
+                if(strcmp(token, "IDENTIFIER") == 0 || const_wordCharBool() || const_numDec() || token[0]=='(' || token[0]=='-' ){//get next lower_logic_expr of lowest_logic_expr()
+
+                    printf("\n\t\t<lower_logic_expr>{");
+                    lower_logic_expr();
+                    break;
+
+                }
+                else{
+                    printf("\t\terror:unexpected symbol");
+                    expr_error();
+                }
                 break;
-            }
-            else
-            {
-                error("\t\tunexpected symbol");
-            }
-            break;
         }
-        else if (strcmp(token, "or") == 0)
-        {
+        else if(strcmp(token, "or") == 0){
             lowest_logic_expr();
             break;
         }
-        else
-        {
+        else{
             printf("\n\t\t\t<low_logic_expr>{");
             low_logic_expr();
             break;
         }
 
+
         getNextToken();
+
+
     }
+
+
 }
 
-void low_logic_expr()
-{
 
-    while (const_numDec() || token[0] == '(' || token[0] == ')' || strcmp(token, "IDENTIFIER") == 0 || const_wordCharBool() || boolean_operator() || logical_operator() || arithmetic_operator())
-    {
 
-        if (strcmp(token, "not") == 0)
-        {
-            printf("\n\t\t\t\t\t\t\t\t\t}");
-            printf("\n\t\t\t\t\t\t\t\t}");
-            printf("\n\t\t\t\t\t\t\t}");
-            printf("\n\t\t\t\t\t\t}");
-            printf("\n\t\t\t\t\t}");
-            printf("\n\t\t\t\t}");
-            printf("\n\t\t\t}");
-            printf("\n\n\t\t\t%s\n", token);
-            getNextToken();
+void low_logic_expr(){
 
-            if (strcmp(token, "IDENTIFIER") == 0 || const_wordCharBool() || const_numDec() || token[0] == '(' || token[0] == '-')
-            { // get next lower_logic_expr of lowest_logic_expr()
+   while(const_numDec()|| token[0]=='(' || token[0]==')' || strcmp(token, "IDENTIFIER") == 0 || const_wordCharBool() || boolean_operator() || logical_operator() || arithmetic_operator()){
 
-                printf("\n\t\t\t<low_logic_expr>{");
-                low_logic_expr();
+        if(strcmp(token, "not") == 0){
+                printf("\n\t\t\t\t\t\t\t\t\t}");
+                printf("\n\t\t\t\t\t\t\t\t}");
+                printf("\n\t\t\t\t\t\t\t}");
+                printf("\n\t\t\t\t\t\t}");
+                printf("\n\t\t\t\t\t}");
+                printf("\n\t\t\t\t}");
+                printf("\n\t\t\t}");
+                printf("\n\n\t\t\t%s\n", token);
+                getNextToken();
+
+                if(strcmp(token, "IDENTIFIER") == 0 || const_wordCharBool() || const_numDec() || token[0]=='(' || token[0]=='-' ){//get next lower_logic_expr of lowest_logic_expr()
+
+                    printf("\n\t\t\t<low_logic_expr>{");
+                    low_logic_expr();
+                    break;
+                }
+                else{
+                    printf("\t\t\terror:unexpected symbol");
+                    expr_error();
+                }
                 break;
-            }
-            else
-            {
-                error("\t\t\tunexpected symbol");
-            }
-            break;
         }
-        else if (strcmp(token, "or") == 0)
-        {
+        else if(strcmp(token, "or") == 0){
             lowest_logic_expr();
             break;
         }
-        else if (strcmp(token, "and") == 0)
-        {
+        else if(strcmp(token, "and") == 0){
             lower_logic_expr();
             break;
         }
-        else
-        {
+        else{
             printf("\n\t\t\t\t<expr_factor>{");
             expr_factor();
 
@@ -888,327 +1081,308 @@ void low_logic_expr()
         }
         getNextToken();
     }
+
 }
 
-void expr_factor()
-{
+void expr_factor(){
 
-    while (const_numDec() || token[0] == '(' || token[0] == ')' || strcmp(token, "IDENTIFIER") == 0 || const_wordCharBool() || boolean_operator() || logical_operator() || arithmetic_operator())
-    {
 
-        if (boolean_operator())
-        {
-            printf("\n\t\t\t\t\t\t\t\t\t}");
-            printf("\n\t\t\t\t\t\t\t\t}");
-            printf("\n\t\t\t\t\t\t\t}");
-            printf("\n\t\t\t\t\t\t}");
-            printf("\n\t\t\t\t\t}");
-            printf("\n\t\t\t\t}");
-            printf("\n\n\t\t\t\t%s\n", token);
-            getNextToken();
+    while(const_numDec()|| token[0]=='(' || token[0]==')' || strcmp(token, "IDENTIFIER") == 0 || const_wordCharBool() || boolean_operator() || logical_operator() || arithmetic_operator()){
 
-            if (strcmp(token, "IDENTIFIER") == 0 || const_wordCharBool() || const_numDec() || token[0] == '-')
-            { // get next lower_logic_expr of lowest_logic_expr()
+        if(boolean_operator()){
+                printf("\n\t\t\t\t\t\t\t\t\t}");
+                printf("\n\t\t\t\t\t\t\t\t}");
+                printf("\n\t\t\t\t\t\t\t}");
+                printf("\n\t\t\t\t\t\t}");
+                printf("\n\t\t\t\t\t}");
+                printf("\n\t\t\t\t}");
+                printf("\n\n\t\t\t\t%s\n", token);
+                getNextToken();
 
-                printf("\n\t\t\t\t<expr_factor>{");
-                expr_factor();
-                break;
-            }
-            else
-            {
-                error("\t\t\t\tunexpected symbol");
-            }
-            break;
+                if(strcmp(token, "IDENTIFIER") == 0 || const_wordCharBool() || const_numDec() || token[0]=='-' ){//get next lower_logic_expr of lowest_logic_expr()
+
+                    printf("\n\t\t\t\t<expr_factor>{");
+                    expr_factor();
+                    break;
+                }
+                else{
+                    printf("\t\t\t\terror:unexpected symbol");
+                    expr_error();
+                }
+               break;
         }
-        else if (strcmp(token, "or") == 0)
-        {
+        else if(strcmp(token, "or") == 0){
             lowest_logic_expr();
             break;
         }
-        else if (strcmp(token, "and") == 0)
-        {
+        else if(strcmp(token, "and") == 0){
             lower_logic_expr();
             break;
         }
-        else if (strcmp(token, "not") == 0)
-        {
+        else if(strcmp(token, "not") == 0){
             low_logic_expr();
             break;
         }
-        else if (const_wordCharBool())
-        {
+        else if(const_wordCharBool()){
             printf("\n\t\t\t\t\t<const_wordCharBool>{");
             printf("\n\t\t\t\t\t\t%s", token);
+
         }
-        else if (const_numDec() || strcmp(token, "IDENTIFIER") == 0 || arithmetic_operator())
-        {
+        else if(const_numDec() || strcmp(token, "IDENTIFIER") == 0 || arithmetic_operator()){
             printf("\n\t\t\t\t\t<arithmetic_expr>{");
             printf("\n\t\t\t\t\t\t<higher_term>{");
             higher_term();
             break;
         }
-        else
-        {
+        else{
             printf("\n\t\t\t\t\t\t%s", token);
             break;
         }
         getNextToken();
     }
+
 }
 
-void higher_term()
-{
+void higher_term(){
 
-    while (const_numDec() || token[0] == '(' || token[0] == ')' || strcmp(token, "IDENTIFIER") == 0 || const_wordCharBool() || boolean_operator() || logical_operator() || arithmetic_operator())
-    {
+    while(const_numDec()|| token[0]=='(' || token[0]==')' || strcmp(token, "IDENTIFIER") == 0 || const_wordCharBool() || boolean_operator() || logical_operator() || arithmetic_operator()){
 
-        if (token[0] == '+' || token[0] == '-')
-        {
-            printf("\n\t\t\t\t\t\t\t\t\t}");
-            printf("\n\t\t\t\t\t\t\t\t}");
-            printf("\n\t\t\t\t\t\t\t}");
-            printf("\n\t\t\t\t\t\t}");
-            printf("\n\n\t\t\t\t\t\t%s\n", token);
-            getNextToken();
+        if(token[0] == '+' || token[0] == '-'){
+                printf("\n\t\t\t\t\t\t\t\t\t}");
+                printf("\n\t\t\t\t\t\t\t\t}");
+                printf("\n\t\t\t\t\t\t\t}");
+                printf("\n\t\t\t\t\t\t}");
+                printf("\n\n\t\t\t\t\t\t%s\n", token);
+                getNextToken();
 
-            if (strcmp(token, "IDENTIFIER") == 0 || const_numDec() || token[0] == '(')
-            { // get next lower_logic_expr of lowest_logic_expr()
+                if(strcmp(token, "IDENTIFIER") == 0 || const_numDec() || token[0]=='(' ){//get next lower_logic_expr of lowest_logic_expr()
 
-                printf("\n\t\t\t\t\t\t<higher_term>{");
-                higher_term();
+                    printf("\n\t\t\t\t\t\t<higher_term>{");
+                    higher_term();
+                    break;
+                }
+                else if(token[0] == '-'){
+
+                    printf("\n\n\t\t\t\t\t\t%s\n", token);
+                    printf("\n\t\t\t\t\t\t<higher_term>{");
+                    getNextToken();
+                    higher_term();
+                    break;
+
+                }
+                else{
+                    printf("\t\t\t\t\t\terror:unexpected symbol");
+                    expr_error();
+                }
                 break;
-            }
-            else
-            {
-                error("\t\t\t\t\t\tunexpected symbol");
-            }
-            break;
         }
-        else if (strcmp(token, "or") == 0)
-        {
+        else if(strcmp(token, "or") == 0){
             lowest_logic_expr();
             break;
         }
-        else if (strcmp(token, "and") == 0)
-        {
+        else if(strcmp(token, "and") == 0){
             lower_logic_expr();
             break;
         }
-        else if (strcmp(token, "not") == 0)
-        {
+        else if(strcmp(token, "not") == 0){
             low_logic_expr();
             break;
         }
-        else if (boolean_operator())
-        {
+        else if(boolean_operator()){
             expr_factor();
             break;
         }
-        else if (const_wordCharBool())
-        {
+        else if(const_wordCharBool()){
             expr_factor();
             break;
         }
-        else
-        {
+        else{
             printf("\n\t\t\t\t\t\t\t<term>{");
             term();
             break;
         }
         getNextToken();
     }
+
+
 }
 
-void term()
-{
+void term(){
 
-    while (const_numDec() || token[0] == '(' || token[0] == ')' || strcmp(token, "IDENTIFIER") == 0 || const_wordCharBool() || boolean_operator() || logical_operator() || arithmetic_operator())
-    {
+    while(const_numDec()|| token[0]=='(' || token[0]==')' || strcmp(token, "IDENTIFIER") == 0 || const_wordCharBool() || boolean_operator() || logical_operator() || arithmetic_operator()){
 
-        if (token[0] == '*' || token[0] == '/' || token[0] == '@' || token[0] == '%')
-        {
-            printf("\n\t\t\t\t\t\t\t\t\t}");
-            printf("\n\t\t\t\t\t\t\t\t}");
-            printf("\n\t\t\t\t\t\t\t}");
-            printf("\n\n\t\t\t\t\t\t\t%s\n", token);
-            getNextToken();
+        if(token[0] == '*' || token[0] == '/' || token[0] == '@' || token[0] == '%'){
+                printf("\n\t\t\t\t\t\t\t\t\t}");
+                printf("\n\t\t\t\t\t\t\t\t}");
+                printf("\n\t\t\t\t\t\t\t}");
+                printf("\n\n\t\t\t\t\t\t\t%s\n", token);
+                getNextToken();
 
-            if (strcmp(token, "IDENTIFIER") == 0 || const_numDec() || token[0] == '(')
-            { // get next lower_logic_expr of lowest_logic_expr()
+                if(strcmp(token, "IDENTIFIER") == 0 || const_numDec() || token[0]=='(' ){//get next lower_logic_expr of lowest_logic_expr()
 
-                printf("\n\t\t\t\t\t\t\t<term>{");
-                term();
+                    printf("\n\t\t\t\t\t\t\t<term>{");
+                    term();
+                    break;
+                }
+                else{
+                    printf("\t\t\t\t\t\t\terror:unexpected symbol");
+                    expr_error();
+                }
                 break;
-            }
-            else
-            {
-                error("\t\t\t\t\t\t\ttunexpected symbol2");
-            }
-            break;
         }
-        else if (strcmp(token, "or") == 0)
-        {
+        else if(strcmp(token, "or") == 0){
             lowest_logic_expr();
             break;
         }
-        else if (strcmp(token, "and") == 0)
-        {
+        else if(strcmp(token, "and") == 0){
             lower_logic_expr();
             break;
         }
-        else if (strcmp(token, "not") == 0)
-        {
+        else if(strcmp(token, "not") == 0){
             low_logic_expr();
             break;
         }
-        else if (boolean_operator())
-        {
+        else if(boolean_operator()){
             expr_factor();
             break;
         }
-        else if (token[0] == '+' || token[0] == '-')
-        {
+        else if(token[0] == '+' || token[0] == '-'){
             higher_term();
             break;
+
         }
-        else if (const_wordCharBool())
-        {
+        else if(const_wordCharBool()){
             expr_factor();
             break;
         }
-        else
-        {
-            printf("\n\t\t\t\t\t\t\t\t<arithmetic_factor>{");
-            arithmetic_factor();
-            break;
+        else{
+          printf("\n\t\t\t\t\t\t\t\t<arithmetic_factor>{");
+           arithmetic_factor();
+           break;
+
         }
         getNextToken();
     }
+
+
+
 }
 
-void arithmetic_factor()
-{
 
-    while (const_numDec() || token[0] == '(' || token[0] == ')' || strcmp(token, "IDENTIFIER") == 0 || const_wordCharBool() || boolean_operator() || logical_operator() || arithmetic_operator())
-    {
+void arithmetic_factor(){
 
-        if (strcmp(token, "or") == 0)
-        {
+    while(const_numDec()|| token[0]=='(' || token[0]==')' || strcmp(token, "IDENTIFIER") == 0 || const_wordCharBool() || boolean_operator() || logical_operator() || arithmetic_operator()){
+
+
+        if(strcmp(token, "or") == 0){
             lowest_logic_expr();
             break;
         }
-        else if (strcmp(token, "and") == 0)
-        {
+        else if(strcmp(token, "and") == 0){
             lower_logic_expr();
             break;
         }
-        else if (strcmp(token, "not") == 0)
-        {
+        else if(strcmp(token, "not") == 0){
             low_logic_expr();
             break;
         }
-        else if (boolean_operator())
-        {
+        else if(boolean_operator()){
             expr_factor();
             break;
         }
-        else if (token[0] == '+' || token[0] == '-')
-        {
+        else if(token[0] == '+' || token[0] == '-'){
             higher_term();
             break;
+
         }
-        else if (token[0] == '*' || token[0] == '/' || token[0] == '@' || token[0] == '%')
-        {
+        else if(token[0] == '*' || token[0] == '/' || token[0] == '@' || token[0] == '%' ){
             term();
             break;
         }
-        else if (const_wordCharBool())
-        {
+        else if(const_wordCharBool()){
             expr_factor();
             break;
         }
-        else if (strcmp(token, "IDENTIFIER") == 0 || const_numDec())
-        {
-            printf("\n\t\t\t\t\t\t\t\t\t<factor>{");
-            factor();
-            break;
+        else if(strcmp(token, "IDENTIFIER") == 0 || const_numDec()){
+          printf("\n\t\t\t\t\t\t\t\t\t<factor>{");
+           factor();
+           break;
+
         }
 
         getNextToken();
     }
+
 }
 
-int factor()
-{
 
-    while (const_numDec() || token[0] == '(' || token[0] == ')' || strcmp(token, "IDENTIFIER") == 0 || const_wordCharBool() || boolean_operator() || logical_operator() || arithmetic_operator())
-    {
+int factor(){
 
-        if (token[0] == '^')
-        {
+
+    while(const_numDec()|| token[0]=='(' || token[0]==')' || strcmp(token, "IDENTIFIER") == 0 || const_wordCharBool() || boolean_operator() || logical_operator() || arithmetic_operator()){
+
+        if(token[0]=='^'){
             printf("\n\t\t\t\t\t\t\t\t\t}");
             printf("\n\n\t\t\t\t\t\t\t\t\t%s\n", token);
             getNextToken();
 
-            if (strcmp(token, "IDENTIFIER") == 0 || const_numDec() || token[0] == '(')
-            { // get next lower_logic_expr of lowest_logic_expr()
+            if(strcmp(token, "IDENTIFIER") == 0 || const_numDec() || token[0]=='(' ){//get next lower_logic_expr of lowest_logic_expr()
 
                 printf("\n\t\t\t\t\t\t\t\t\t<factor>{");
                 factor();
                 break;
+
             }
-            else
-            {
-                error("\t\t\t\t\t\t\t\t\ttunexpected symbol1");
+            else{
+                printf("\t\t\t\t\t\t\t\t\terror:unexpected symbol");
+                expr_error();
             }
             break;
         }
-        else if (strcmp(token, "or") == 0)
-        {
+        else if(strcmp(token, "or") == 0){
             lowest_logic_expr();
             break;
         }
-        else if (strcmp(token, "and") == 0)
-        {
+        else if(strcmp(token, "and") == 0){
             lower_logic_expr();
             break;
         }
-        else if (strcmp(token, "not") == 0)
-        {
+        else if(strcmp(token, "not") == 0){
             low_logic_expr();
             break;
         }
-        else if (boolean_operator())
-        {
+        else if(boolean_operator()){
             expr_factor();
             break;
         }
-        else if (token[0] == '+' || token[0] == '-')
-        {
+        else if(token[0] == '+' || token[0] == '-'){
             higher_term();
             break;
         }
-        else if (token[0] == '*' || token[0] == '/' || token[0] == '@' || token[0] == '%')
-        {
+        else if(token[0] == '*' || token[0] == '/' || token[0] == '@' || token[0] == '%' ){
             term();
             break;
         }
-        else if (const_wordCharBool())
-        {
+        else if(const_wordCharBool()){
             expr_factor();
             break;
         }
-        else if (strcmp(token, "IDENTIFIER") == 0)
-        {
+        else if(strcmp(token, "IDENTIFIER") == 0){
             printf("\n\t\t\t\t\t\t\t\t\t\t%s", token);
+
+
         }
-        else if (const_numDec())
-        {
+        else if(const_numDec()){
             printf("\n\t\t\t\t\t\t\t\t\t\t<const_numDec>");
             printf("\n\t\t\t\t\t\t\t\t\t\t\t%s", token);
             printf("\n\t\t\t\t\t\t\t\t\t\t}");
+
         }
 
+
         getNextToken();
+
     }
+
 }
+
