@@ -964,22 +964,39 @@ void lowest_logic_expr(){
 
             getNextToken();
 
-            if(strcmp(token, "IDENTIFIER") == 0 || const_wordCharBool() || const_numDec() || token[0]=='('){ //get next lowest_logic_expr of expr()
+            if(strcmp(token, "IDENTIFIER") == 0 || const_wordCharBool() || const_numDec() || token[0]=='('){
 
                 printf("\n\t<lowest_logic_expr>{");
                 lowest_logic_expr();
                 break;
 
             }
+            else if(token[0]=='-'){
+                printf("\n\n\t%s\n", token);
+                getNextToken();
+                if(strcmp(token, "IDENTIFIER") == 0 || const_wordCharBool() || const_numDec() || token[0]=='('){
+
+                    printf("\n\t<lowest_logic_expr>{");
+                    lowest_logic_expr();
+                    break;
+
+                }
+                else{//unexpected symbol eg 12+3>
+                printf("\n\terror:unexpected symbol");
+                expr_error();
+                }
+                 break;
+            }
             else{//unexpected symbol eg 12+3>
                 printf("\n\terror:unexpected symbol");
                 expr_error();
             }
+             break;
 
         }
         else{
             printf("\n\t\t<lower_logic_expr>{");
-            lower_logic_expr(); //get leftmost lower_logic_expr of lowest_logic_expr()
+            lower_logic_expr();
             break;
         }
 
@@ -1006,12 +1023,29 @@ void lower_logic_expr(){
                 printf("\n\n\t\t%s\n", token);
                 getNextToken();
 
-                if(strcmp(token, "IDENTIFIER") == 0 || const_wordCharBool() || const_numDec() || token[0]=='(' || token[0]=='-' ){//get next lower_logic_expr of lowest_logic_expr()
+                if(strcmp(token, "IDENTIFIER") == 0 || const_wordCharBool() || const_numDec() || token[0]=='('){
 
                     printf("\n\t\t<lower_logic_expr>{");
                     lower_logic_expr();
                     break;
 
+                }
+                else if(token[0]=='-'){
+                    printf("\n\n\t\t%s\n", token);
+                    getNextToken();
+
+                    if(strcmp(token, "IDENTIFIER") == 0 || const_wordCharBool() || const_numDec() || token[0]=='('){
+
+                        printf("\n\t\t<lower_logic_expr>{");
+                        lower_logic_expr();
+                        break;
+
+                    }
+                    else{
+                        printf("\t\terror:unexpected symbol");
+                        expr_error();
+                    }
+                    break;
                 }
                 else{
                     printf("\t\terror:unexpected symbol");
@@ -1055,11 +1089,28 @@ void low_logic_expr(){
                 printf("\n\n\t\t\t%s\n", token);
                 getNextToken();
 
-                if(strcmp(token, "IDENTIFIER") == 0 || const_wordCharBool() || const_numDec() || token[0]=='(' || token[0]=='-' ){//get next lower_logic_expr of lowest_logic_expr()
+                if(strcmp(token, "IDENTIFIER") == 0 || const_wordCharBool() || const_numDec() || token[0]=='('){
 
                     printf("\n\t\t\t<low_logic_expr>{");
                     low_logic_expr();
                     break;
+                }
+                else if(token[0]=='-' ){
+                    printf("\n\n\t\t\t%s\n", token);
+                    getNextToken();
+
+                     if(strcmp(token, "IDENTIFIER") == 0 || const_wordCharBool() || const_numDec() || token[0]=='(' ){
+
+                        printf("\n\t\t\t<low_logic_expr>{");
+                        low_logic_expr();
+                        break;
+                    }
+                    else{
+                        printf("\t\t\terror:unexpected symbol");
+                        expr_error();
+                    }
+                    break;
+
                 }
                 else{
                     printf("\t\t\terror:unexpected symbol");
@@ -1101,17 +1152,35 @@ void expr_factor(){
                 printf("\n\n\t\t\t\t%s\n", token);
                 getNextToken();
 
-                if(strcmp(token, "IDENTIFIER") == 0 || const_wordCharBool() || const_numDec() || token[0]=='-' ){//get next lower_logic_expr of lowest_logic_expr()
+                if(strcmp(token, "IDENTIFIER") == 0 || const_wordCharBool() || const_numDec() ){
 
                     printf("\n\t\t\t\t<expr_factor>{");
                     expr_factor();
                     break;
                 }
+                else if(token[0]=='-'){
+                    printf("\n\n\t\t\t\t%s\n", token);
+                    getNextToken();
+
+                    if(strcmp(token, "IDENTIFIER") == 0 || const_wordCharBool() || const_numDec() ){
+
+                        printf("\n\t\t\t\t<expr_factor>{");
+                        expr_factor();
+                        break;
+                    }
+                    else{
+                    printf("\t\t\t\terror:unexpected symbol");
+                    expr_error();
+                    }
+                    break;
+
+                }
                 else{
                     printf("\t\t\t\terror:unexpected symbol");
                     expr_error();
                 }
-               break;
+
+                break;
         }
         else if(strcmp(token, "or") == 0){
             lowest_logic_expr();
@@ -1157,7 +1226,7 @@ void higher_term(){
                 printf("\n\n\t\t\t\t\t\t%s\n", token);
                 getNextToken();
 
-                if(strcmp(token, "IDENTIFIER") == 0 || const_numDec() || token[0]=='(' ){//get next lower_logic_expr of lowest_logic_expr()
+                if(strcmp(token, "IDENTIFIER") == 0 || const_numDec() || token[0]=='(' ){
 
                     printf("\n\t\t\t\t\t\t<higher_term>{");
                     higher_term();
@@ -1220,11 +1289,27 @@ void term(){
                 printf("\n\n\t\t\t\t\t\t\t%s\n", token);
                 getNextToken();
 
-                if(strcmp(token, "IDENTIFIER") == 0 || const_numDec() || token[0]=='(' ){//get next lower_logic_expr of lowest_logic_expr()
+                if(strcmp(token, "IDENTIFIER") == 0 || const_numDec() || token[0]=='(' ){
 
                     printf("\n\t\t\t\t\t\t\t<term>{");
                     term();
                     break;
+                }
+                else if(token[0]=='-'){
+                    printf("\n\n\t\t\t\t\t\t\t%s\n", token);
+                    getNextToken();
+
+                    if(strcmp(token, "IDENTIFIER") == 0 || const_numDec() || token[0]=='(' ){
+                        printf("\n\t\t\t\t\t\t\t<term>{");
+                        term();
+                        break;
+                    }
+                    else{
+                        printf("\t\t\t\t\t\t\terror:unexpected symbol");
+                        expr_error();
+                    }
+                    break;
+
                 }
                 else{
                     printf("\t\t\t\t\t\t\terror:unexpected symbol");
@@ -1328,7 +1413,7 @@ int factor(){
             printf("\n\n\t\t\t\t\t\t\t\t\t%s\n", token);
             getNextToken();
 
-            if(strcmp(token, "IDENTIFIER") == 0 || const_numDec() || token[0]=='(' ){//get next lower_logic_expr of lowest_logic_expr()
+            if(strcmp(token, "IDENTIFIER") == 0 || const_numDec() || token[0]=='(' ){
 
                 printf("\n\t\t\t\t\t\t\t\t\t<factor>{");
                 factor();
@@ -1387,7 +1472,4 @@ int factor(){
     }
 
 }
-
-
-
 
