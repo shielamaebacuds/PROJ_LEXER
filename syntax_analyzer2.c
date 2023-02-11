@@ -934,31 +934,36 @@ bool const_numDec(){
 
 
 void expr(){
-    // getNextToken();
+
     printf("\n<expr>{");
+
+    if(token[0]=='-'){
+        printf("\n\t%s",token);
+        getNextToken();
+    }
 
     while(const_numDec()|| token[0]=='(' || token[0]==')' || strcmp(token, "IDENTIFIER") == 0 || const_wordCharBool() || boolean_operator() || logical_operator() || arithmetic_operator()){
 
-            printf("\n\t<lowest_logic_expr>{");
-            lowest_logic_expr(); //get the leftmost term
 
+                printf("\n\t<lowest_logic_expr>{");
+                lowest_logic_expr(); //get the leftmost term
 
+                printf("\n\t\t\t\t\t\t\t\t\t}");
+                printf("\n\t\t\t\t\t\t\t\t}");
+                printf("\n\t\t\t\t\t\t\t}");
+                printf("\n\t\t\t\t\t\t}");
+                printf("\n\t\t\t\t\t}");
+                printf("\n\t\t\t\t}");
+                printf("\n\t\t\t}");
+                printf("\n\t\t}");
+                printf("\n\t}");
 
-            printf("\n\t\t\t\t\t\t\t\t\t}");
-            printf("\n\t\t\t\t\t\t\t\t}");
-            printf("\n\t\t\t\t\t\t\t}");
-            printf("\n\t\t\t\t\t\t}");
-            printf("\n\t\t\t\t\t}");
-            printf("\n\t\t\t\t}");
-            printf("\n\t\t\t}");
-            printf("\n\t\t}");
-            printf("\n\t}");
+                if(const_numDec()|| token[0]=='(' || token[0]==')' || strcmp(token, "IDENTIFIER") == 0 || const_wordCharBool() || boolean_operator() || logical_operator() || arithmetic_operator()){
+                    getNextToken();
+                }else{
+                    break;
+                }
 
-            if(const_numDec()|| token[0]=='(' || token[0]==')' || strcmp(token, "IDENTIFIER") == 0 || const_wordCharBool() || boolean_operator() || logical_operator() || arithmetic_operator()){
-                getNextToken();
-            }else{
-                break;
-            }
 
     }
 
@@ -1478,7 +1483,6 @@ int factor(){
         else if(strcmp(token, "IDENTIFIER") == 0){
             printf("\n\t\t\t\t\t\t\t\t\t\t%s", token);
 
-
         }
         else if(const_numDec()){
             printf("\n\t\t\t\t\t\t\t\t\t\t<const_numDec>");
@@ -1488,9 +1492,11 @@ int factor(){
         }
 
 
+
         getNextToken();
 
     }
 
 }
+
 
