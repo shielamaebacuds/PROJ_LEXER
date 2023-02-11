@@ -624,6 +624,13 @@ void compound_stmt()
         {
             printf("\n}");
             getNextToken();
+
+            if(strcmp(token, "NEWLINE") == 0 || strcmp(token, "EOF") == 0 ){
+                printf("\n%s",token);
+            }
+            else{
+                error("error: missing NEWLINE");
+            }
         }
     }
     else if (strcmp(token, "foreach") == 0){ //foreach_stmt
@@ -649,6 +656,13 @@ void compound_stmt()
         {
             printf("\n}");
             getNextToken();
+
+            if(strcmp(token, "NEWLINE") == 0 || strcmp(token, "EOF") == 0 ){
+                printf("\n%s",token);
+            }
+            else{
+                error("error: missing NEWLINE");
+            }
         }
     }
     else if (strcmp(token, "match") == 0){
@@ -669,6 +683,13 @@ void compound_stmt()
         {
             printf("\n}");
             getNextToken();
+
+            if(strcmp(token, "NEWLINE") == 0 || strcmp(token, "EOF") == 0 ){
+                printf("\n%s",token);
+            }
+            else{
+                error("error: missing NEWLINE");
+            }
         }
     }
 
@@ -851,7 +872,7 @@ bool resv_word(){
 bool boolean_operator(){
 
 
-    if(strcmp(token, "==") == 0 || token[0]== '>' || token[0]=='<'|| strcmp(token, "!=") == 0 ||strcmp(token, ">=") == 0 || strcmp(token, "<=") == 0){
+    if(strcmp(token, "==") == 0 || strcmp(token, ">") == 0 || strcmp(token, "<") == 0|| strcmp(token, "!=") == 0 ||strcmp(token, ">=") == 0 || strcmp(token, "<=") == 0){
         return true;
     }
     else{
