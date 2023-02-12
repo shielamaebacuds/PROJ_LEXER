@@ -13,6 +13,8 @@ char *token;            //current token
 char *errorLine;        //error line
 char *tokenLine;        //token line
 FILE *syntaxTable;      //for syntaxTable.txt
+int leftParenCount;     //number of left paren
+int rightParenCount;    //number of right paren
 
 void getNextToken();               // getting the next token in the symbol table
 void stmt();                       // check whether the stmt is simple or compound
@@ -935,6 +937,9 @@ bool const_numDec(){
 
 void expr(){
 
+    leftParenCount = 0;
+    rightParenCount = 0;
+
     printf("\n<expr>{");
 
     if(token[0]=='-'){
@@ -944,6 +949,18 @@ void expr(){
 
     while(const_numDec()|| token[0]=='(' || token[0]==')' || strcmp(token, "IDENTIFIER") == 0 || const_wordCharBool() || boolean_operator() || logical_operator() || arithmetic_operator()){
 
+
+
+                if(token[0]=='('){
+                    printf("\n%s\n",token);
+                    getNextToken();
+                    leftParenCount = leftParenCount +1;
+                }
+                else if(token[0]==')'){
+                    printf("\n%s\n",token);
+                    getNextToken();
+                    rightParenCount = rightParenCount +1;
+                }
 
                 printf("\n\t<lowest_logic_expr>{");
                 lowest_logic_expr(); //get the leftmost term
@@ -967,7 +984,15 @@ void expr(){
 
     }
 
+
     printf("\n}");
+
+    if(leftParenCount>rightParenCount){
+        error("error: missing )");
+    }
+    else if(rightParenCount>leftParenCount){
+        error("error: missing (");
+    }
 }
 
 
@@ -990,7 +1015,7 @@ void lowest_logic_expr(){
 
             getNextToken();
 
-            if(strcmp(token, "IDENTIFIER") == 0 || const_wordCharBool() || const_numDec() || token[0]=='('){
+            if(strcmp(token, "IDENTIFIER") == 0 || const_wordCharBool() || const_numDec() || token[0]=='(' || token[0]==')'){
 
                 printf("\n\t<lowest_logic_expr>{");
                 lowest_logic_expr();
@@ -1000,7 +1025,7 @@ void lowest_logic_expr(){
             else if(token[0]=='-'){
                 printf("\n\n\t%s\n", token);
                 getNextToken();
-                if(strcmp(token, "IDENTIFIER") == 0 || const_wordCharBool() || const_numDec() || token[0]=='('){
+                if(strcmp(token, "IDENTIFIER") == 0 || const_wordCharBool() || const_numDec() || token[0]=='(' || token[0]==')'){
 
                     printf("\n\t<lowest_logic_expr>{");
                     lowest_logic_expr();
@@ -1019,6 +1044,20 @@ void lowest_logic_expr(){
             }
              break;
 
+        }
+        else if(token[0]=='('){
+            printf("\n\t%s\n",token);
+            getNextToken();
+            leftParenCount = leftParenCount +1;
+            lowest_logic_expr();
+            break;
+        }
+        else if(token[0]==')'){
+            printf("\n\t%s\n",token);
+            getNextToken();
+            rightParenCount = rightParenCount +1;
+            lowest_logic_expr();
+            break;
         }
         else{
             printf("\n\t\t<lower_logic_expr>{");
@@ -1049,7 +1088,7 @@ void lower_logic_expr(){
                 printf("\n\n\t\t%s\n", token);
                 getNextToken();
 
-                if(strcmp(token, "IDENTIFIER") == 0 || const_wordCharBool() || const_numDec() || token[0]=='('){
+                if(strcmp(token, "IDENTIFIER") == 0 || const_wordCharBool() || const_numDec() || token[0]=='(' || token[0]==')'){
 
                     printf("\n\t\t<lower_logic_expr>{");
                     lower_logic_expr();
@@ -1060,7 +1099,7 @@ void lower_logic_expr(){
                     printf("\n\n\t\t%s\n", token);
                     getNextToken();
 
-                    if(strcmp(token, "IDENTIFIER") == 0 || const_wordCharBool() || const_numDec() || token[0]=='('){
+                    if(strcmp(token, "IDENTIFIER") == 0 || const_wordCharBool() || const_numDec() || token[0]=='(' || token[0]==')'){
 
                         printf("\n\t\t<lower_logic_expr>{");
                         lower_logic_expr();
@@ -1081,6 +1120,20 @@ void lower_logic_expr(){
         }
         else if(strcmp(token, "or") == 0){
             lowest_logic_expr();
+            break;
+        }
+        else if(token[0]=='('){
+            printf("\n\t\t%s\n",token);
+            getNextToken();
+            leftParenCount = leftParenCount +1;
+            lower_logic_expr();
+            break;
+        }
+        else if(token[0]==')'){
+            printf("\n\t\t%s\n",token);
+            getNextToken();
+            rightParenCount = rightParenCount +1;
+            lower_logic_expr();
             break;
         }
         else{
@@ -1115,7 +1168,7 @@ void low_logic_expr(){
                 printf("\n\n\t\t\t%s\n", token);
                 getNextToken();
 
-                if(strcmp(token, "IDENTIFIER") == 0 || const_wordCharBool() || const_numDec() || token[0]=='('){
+                if(strcmp(token, "IDENTIFIER") == 0 || const_wordCharBool() || const_numDec() || token[0]=='(' || token[0]==')'){
 
                     printf("\n\t\t\t<low_logic_expr>{");
                     low_logic_expr();
@@ -1125,7 +1178,7 @@ void low_logic_expr(){
                     printf("\n\n\t\t\t%s\n", token);
                     getNextToken();
 
-                     if(strcmp(token, "IDENTIFIER") == 0 || const_wordCharBool() || const_numDec() || token[0]=='(' ){
+                     if(strcmp(token, "IDENTIFIER") == 0 || const_wordCharBool() || const_numDec() || token[0]=='(' || token[0]==')'){
 
                         printf("\n\t\t\t<low_logic_expr>{");
                         low_logic_expr();
@@ -1150,6 +1203,20 @@ void low_logic_expr(){
         }
         else if(strcmp(token, "and") == 0){
             lower_logic_expr();
+            break;
+        }
+        else if(token[0]=='('){
+            printf("\n\t\t\t%s\n",token);
+            getNextToken();
+            leftParenCount = leftParenCount +1;
+            low_logic_expr();
+            break;
+        }
+        else if(token[0]==')'){
+            printf("\n\t\t\t%s\n",token);
+            getNextToken();
+            rightParenCount = rightParenCount +1;
+            low_logic_expr();
             break;
         }
         else{
@@ -1178,7 +1245,7 @@ void expr_factor(){
                 printf("\n\n\t\t\t\t%s\n", token);
                 getNextToken();
 
-                if(strcmp(token, "IDENTIFIER") == 0 || const_wordCharBool() || const_numDec() ){
+                if(strcmp(token, "IDENTIFIER") == 0 || const_wordCharBool() || const_numDec() || token[0]=='(' || token[0]==')'){
 
                     printf("\n\t\t\t\t<expr_factor>{");
                     expr_factor();
@@ -1188,7 +1255,7 @@ void expr_factor(){
                     printf("\n\n\t\t\t\t%s\n", token);
                     getNextToken();
 
-                    if(strcmp(token, "IDENTIFIER") == 0 || const_wordCharBool() || const_numDec() ){
+                    if(strcmp(token, "IDENTIFIER") == 0 || const_wordCharBool() || const_numDec() || token[0]=='(' || token[0]==')'){
 
                         printf("\n\t\t\t\t<expr_factor>{");
                         expr_factor();
@@ -1219,6 +1286,19 @@ void expr_factor(){
         else if(strcmp(token, "not") == 0){
             low_logic_expr();
             break;
+        }
+        else if(token[0]=='('){
+            printf("\n\t\t\t\t%s\n",token);
+            getNextToken();
+            leftParenCount = leftParenCount +1;
+            expr_factor();
+            break;
+        }
+        else if(token[0]==')'){
+            printf("\n\t\t\t\t%s\n",token);
+            getNextToken();
+            rightParenCount = rightParenCount +1;
+            expr_factor();
         }
         else if(const_wordCharBool()){
             printf("\n\t\t\t\t\t<const_wordCharBool>{");
@@ -1252,7 +1332,7 @@ void higher_term(){
                 printf("\n\n\t\t\t\t\t\t%s\n", token);
                 getNextToken();
 
-                if(strcmp(token, "IDENTIFIER") == 0 || const_numDec() || token[0]=='(' ){
+                if(strcmp(token, "IDENTIFIER") == 0 || const_numDec() || token[0]=='(' || token[0]==')'){
 
                     printf("\n\t\t\t\t\t\t<higher_term>{");
                     higher_term();
@@ -1285,12 +1365,25 @@ void higher_term(){
             low_logic_expr();
             break;
         }
+        else if(token[0]=='('){
+            printf("\n\t\t\t\t\t\t%s\n",token);
+            getNextToken();
+            leftParenCount = leftParenCount +1;
+            higher_term();
+            break;
+        }
+        else if(token[0]==')'){
+            printf("\n\t\t\t\t\t\t%s\n",token);
+            getNextToken();
+            rightParenCount = rightParenCount +1;
+            higher_term();
+        }
         else if(boolean_operator()){
-            expr_factor();
+            higher_term();
             break;
         }
         else if(const_wordCharBool()){
-            expr_factor();
+            higher_term();
             break;
         }
         else{
@@ -1315,7 +1408,7 @@ void term(){
                 printf("\n\n\t\t\t\t\t\t\t%s\n", token);
                 getNextToken();
 
-                if(strcmp(token, "IDENTIFIER") == 0 || const_numDec() || token[0]=='(' ){
+                if(strcmp(token, "IDENTIFIER") == 0 || const_numDec() || token[0]=='(' || token[0]==')'){
 
                     printf("\n\t\t\t\t\t\t\t<term>{");
                     term();
@@ -1325,7 +1418,8 @@ void term(){
                     printf("\n\n\t\t\t\t\t\t\t%s\n", token);
                     getNextToken();
 
-                    if(strcmp(token, "IDENTIFIER") == 0 || const_numDec() || token[0]=='(' ){
+                    if(strcmp(token, "IDENTIFIER") == 0 || const_numDec() || token[0]=='(' || token[0]==')'){
+
                         printf("\n\t\t\t\t\t\t\t<term>{");
                         term();
                         break;
@@ -1333,8 +1427,9 @@ void term(){
                     else{
                         printf("\t\t\t\t\t\t\terror:unexpected symbol");
                         expr_error();
+                        break;
                     }
-                    break;
+
 
                 }
                 else{
@@ -1354,6 +1449,19 @@ void term(){
         else if(strcmp(token, "not") == 0){
             low_logic_expr();
             break;
+        }
+        else if(token[0]=='('){
+            printf("\n\t\t\t\t\t\t\t%s\n",token);
+            getNextToken();
+            leftParenCount = leftParenCount +1;
+            term();
+            break;
+        }
+        else if(token[0]==')'){
+            printf("\n\t\t\t\t\t\t\t%s\n",token);
+            getNextToken();
+            rightParenCount = rightParenCount +1;
+            term();
         }
         else if(boolean_operator()){
             expr_factor();
@@ -1416,6 +1524,20 @@ void arithmetic_factor(){
             expr_factor();
             break;
         }
+        else if(token[0]=='('){
+            printf("\n\t\t\t\t\t\t\t%s\n",token);
+            getNextToken();
+            leftParenCount = leftParenCount +1;
+            arithmetic_factor();
+            break;
+        }
+        else if(token[0]==')'){
+            printf("\n\t\t\t\t\t\t\t%s\n",token);
+            getNextToken();
+            rightParenCount = rightParenCount +1;
+            arithmetic_factor();
+            break;
+        }
         else if(strcmp(token, "IDENTIFIER") == 0 || const_numDec()){
           printf("\n\t\t\t\t\t\t\t\t\t<factor>{");
            factor();
@@ -1439,8 +1561,7 @@ int factor(){
             printf("\n\n\t\t\t\t\t\t\t\t\t%s\n", token);
             getNextToken();
 
-            if(strcmp(token, "IDENTIFIER") == 0 || const_numDec() || token[0]=='(' ){
-
+            if(strcmp(token, "IDENTIFIER") == 0 || const_numDec()){
                 printf("\n\t\t\t\t\t\t\t\t\t<factor>{");
                 factor();
                 break;
@@ -1480,9 +1601,35 @@ int factor(){
             expr_factor();
             break;
         }
+        else if(token[0]=='('){
+            printf("\n\t\t\t\t\t\t\t\t\t%s\n",token);
+            getNextToken();
+            leftParenCount = leftParenCount +1;
+            break;
+        }
+        else if(token[0]==')'){
+            printf("\n\t\t\t\t\t\t\t\t\t%s\n",token);
+            getNextToken();
+            rightParenCount = rightParenCount +1;
+            break;
+        }
         else if(strcmp(token, "IDENTIFIER") == 0){
             printf("\n\t\t\t\t\t\t\t\t\t\t%s", token);
 
+        }
+        else if(token[0]=='('){
+            printf("\n\t\t\t\t\t\t\t\t%s\n",token);
+            getNextToken();
+            leftParenCount = leftParenCount +1;
+            factor();
+            break;
+        }
+        else if(token[0]==')'){
+            printf("\n\t\t\t\t\t\t\t\t%s\n",token);
+            getNextToken();
+            rightParenCount = rightParenCount +1;
+            factor();
+            break;
         }
         else if(const_numDec()){
             printf("\n\t\t\t\t\t\t\t\t\t\t<const_numDec>");
@@ -1498,5 +1645,3 @@ int factor(){
     }
 
 }
-
-
