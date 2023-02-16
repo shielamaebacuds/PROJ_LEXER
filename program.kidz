@@ -38,6 +38,12 @@ display(y)
 
 if x>9 then{
  display(x)
+}else then{
+display(y)
+}
+
+if x>9 then{
+ display(x)
 }
 
 
@@ -107,6 +113,12 @@ if x>9 then{
  display(x
 }else if x<9 then{
 display(y)
+}
+
+if x>9 then{
+ display(x)
+}else then{
+display(y
 }
 
 if x>9 then
