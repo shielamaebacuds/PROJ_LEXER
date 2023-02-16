@@ -314,12 +314,11 @@ int simple_stmt(){
                 error("unexpected symbol");
             }
         }
-
         else
         {
             expr();
         }
-        ;
+
     }
     else if(strcmp(token,"return")==0){ //return_stmt
         printf("\n-><return_stmt>");
@@ -359,12 +358,12 @@ int simple_stmt(){
                 error("unexpected symbol");
             }
         }
-
         else
         {
             expr();
         }
-        ;
+
+
     }
     else if(strcmp(token,"input")==0){ //input_stmt
         printf("\n-><input_stmt>");
@@ -950,7 +949,6 @@ void expr(){
     while(const_numDec()|| token[0]=='(' || token[0]==')' || strcmp(token, "IDENTIFIER") == 0 || const_wordCharBool() || boolean_operator() || logical_operator() || arithmetic_operator()){
 
 
-
                 if(token[0]=='('){
                     printf("\n%s\n",token);
                     getNextToken();
@@ -975,9 +973,10 @@ void expr(){
                 printf("\n\t\t}");
                 printf("\n\t}");
 
-                if(const_numDec()|| token[0]=='(' || token[0]==')' || strcmp(token, "IDENTIFIER") == 0 || const_wordCharBool() || boolean_operator() || logical_operator() || arithmetic_operator()){
+                if(const_numDec() || strcmp(token, "IDENTIFIER") == 0 || const_wordCharBool() || boolean_operator() || logical_operator() || arithmetic_operator()){
                     getNextToken();
-                }else{
+                }
+                else{
                     break;
                 }
 
@@ -987,12 +986,7 @@ void expr(){
 
     printf("\n}");
 
-    if(leftParenCount>rightParenCount){
-        error("error: missing )");
-    }
-    else if(rightParenCount>leftParenCount){
-        error("error: missing (");
-    }
+
 }
 
 
@@ -1645,3 +1639,7 @@ int factor(){
     }
 
 }
+
+
+
+
