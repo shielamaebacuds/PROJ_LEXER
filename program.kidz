@@ -9,12 +9,12 @@ var1 = var2
 display(name)
 display("hello world")
 display("Name:",studentName)
-display( 12+3)
+display(12+3)
 
 return(name)
 return("hello world")
 return("Name:",studentName)
-return( 12+3)
+return(12+3)
 
 
 input("Enter name here:", studName)
@@ -51,12 +51,12 @@ display(fruit)
 
 
 match membership:{
-case 1:{
-display("VIP")
-end}
-case !:{
-display("Regular Member")
-end}
+    case 1:{
+        display("VIP")
+        end}
+    case !:{
+        display("Regular Member")
+        end}
 }
 
 
@@ -74,7 +74,7 @@ foreach color in rainbow{
     }
 }
 
-num num2 _ 12 - 3
+num num2 = 12  3
 boolean is_true ! false 
 decimal grade  score
 
