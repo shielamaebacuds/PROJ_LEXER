@@ -15,7 +15,7 @@ char create_CHARACTER_Lexeme(FILE *f, FILE *symbolTable);               // char 
 bool isOperator(FILE *f, FILE *symbolTable, char *c);                   // for operators
 bool isDelimiterBracket(FILE *f, FILE *symbolTable, char *c);           // for delimiters and brackets
 
-int lexer()
+int main()
 {
     FILE *sourceCode;
     char filename[30];
